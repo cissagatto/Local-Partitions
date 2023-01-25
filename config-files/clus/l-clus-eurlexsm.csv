@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-clus-eurlexsm
+Package, clus
+dataset_name, eurlexsm
+number_dataset, 32
+number_folds, 10
+number_cores, 1

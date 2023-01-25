@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-utiml-EukaryotePseAAC
+Package, utiml
+dataset_name, EukaryotePseAAC
+number_dataset, 29
+number_folds, 10
+number_cores, 1

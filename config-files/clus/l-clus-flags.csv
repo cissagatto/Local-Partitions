@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-clus-flags
+Package, clus
+dataset_name, flags
+number_dataset, 34
+number_folds, 10
+number_cores, 1

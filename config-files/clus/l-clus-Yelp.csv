@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-clus-Yelp
+Package, clus
+dataset_name, Yelp
+number_dataset, 90
+number_folds, 10
+number_cores, 1

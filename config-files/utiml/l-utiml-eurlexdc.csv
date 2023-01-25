@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-utiml-eurlexdc
+Package, utiml
+dataset_name, eurlexdc
+number_dataset, 30
+number_folds, 10
+number_cores, 1

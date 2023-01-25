@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-mulan-cellcycle
+Package, mulan
+dataset_name, cellcycle
+number_dataset, 9
+number_folds, 10
+number_cores, 1

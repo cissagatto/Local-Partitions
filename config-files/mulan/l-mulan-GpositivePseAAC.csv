@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-mulan-GpositivePseAAC
+Package, mulan
+dataset_name, GpositivePseAAC
+number_dataset, 42
+number_folds, 10
+number_cores, 1

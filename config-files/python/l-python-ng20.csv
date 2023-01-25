@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-ng20
+Package, python
+dataset_name, ng20
+number_dataset, 49
+number_folds, 10
+number_cores, 1

@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-foodtruck
+Package, python
+dataset_name, foodtruck
+number_dataset, 35
+number_folds, 10
+number_cores, 1

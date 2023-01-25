@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-emotions
+Package, python
+dataset_name, emotions
+number_dataset, 26
+number_folds, 10
+number_cores, 1

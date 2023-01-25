@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-corel5k
+Package, python
+dataset_name, corel5k
+number_dataset, 22
+number_folds, 10
+number_cores, 1

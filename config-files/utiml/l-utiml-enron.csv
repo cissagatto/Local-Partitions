@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-utiml-enron
+Package, utiml
+dataset_name, enron
+number_dataset, 27
+number_folds, 10
+number_cores, 1

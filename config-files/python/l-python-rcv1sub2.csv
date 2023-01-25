@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-rcv1sub2
+Package, python
+dataset_name, rcv1sub2
+number_dataset, 57
+number_folds, 10
+number_cores, 1

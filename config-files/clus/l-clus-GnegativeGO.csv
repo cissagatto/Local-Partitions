@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-clus-GnegativeGO
+Package, clus
+dataset_name, GnegativeGO
+number_dataset, 39
+number_folds, 10
+number_cores, 1

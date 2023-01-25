@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-mulan-corel16k005
+Package, mulan
+dataset_name, corel16k005
+number_dataset, 16
+number_folds, 10
+number_cores, 1

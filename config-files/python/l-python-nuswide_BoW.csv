@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-nuswide_BoW
+Package, python
+dataset_name, nuswide_BoW
+number_dataset, 50
+number_folds, 10
+number_cores, 1

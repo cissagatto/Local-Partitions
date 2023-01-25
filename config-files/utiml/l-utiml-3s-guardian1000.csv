@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-utiml-3s-guardian1000
+Package, utiml
+dataset_name, 3s-guardian1000
+number_dataset, 2
+number_folds, 10
+number_cores, 1

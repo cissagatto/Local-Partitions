@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-mulan-stackex_coffee
+Package, mulan
+dataset_name, stackex_coffee
+number_dataset, 68
+number_folds, 10
+number_cores, 1

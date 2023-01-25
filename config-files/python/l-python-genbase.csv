@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-python-genbase
+Package, python
+dataset_name, genbase
+number_dataset, 38
+number_folds, 10
+number_cores, 1

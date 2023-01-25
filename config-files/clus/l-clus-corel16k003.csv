@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, /home/biomal/Datasets
+Temporary_Path, /dev/shm/el-clus-corel16k003
+Package, clus
+dataset_name, corel16k003
+number_dataset, 14
+number_folds, 10
+number_cores, 1
