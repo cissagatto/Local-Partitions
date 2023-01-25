@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-mulan-tmc-2007-500
-Package, mulan
-dataset_name, tmc-2007-500
-number_dataset, 73
-number_folds, 10
-number_cores, 1

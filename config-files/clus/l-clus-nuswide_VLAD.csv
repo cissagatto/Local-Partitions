@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-nuswide_VLAD
-Package, clus
-dataset_name, nuswide_VLAD
-number_dataset, 51
-number_folds, 10
-number_cores, 1

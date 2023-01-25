@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-yeast
-Package, clus
-dataset_name, yeast
-number_dataset, 89
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-VirusPseAAC
-Package, clus
-dataset_name, VirusPseAAC
-number_dataset, 75
-number_folds, 10
-number_cores, 1

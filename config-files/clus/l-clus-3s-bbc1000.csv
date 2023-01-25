@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-3s-bbc1000
-Package, clus
-dataset_name, 3s-bbc1000
-number_dataset, 1
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-rcv1sub4
-Package, clus
-dataset_name, rcv1sub4
-number_dataset, 59
-number_folds, 10
-number_cores, 1

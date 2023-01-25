@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-yahoo_health
-Package, clus
-dataset_name, yahoo_health
-number_dataset, 83
-number_folds, 10
-number_cores, 1

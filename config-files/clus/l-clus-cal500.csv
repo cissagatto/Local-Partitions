@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-clus-cal500
-Package, clus
-dataset_name, cal500
-number_dataset, 8
-number_folds, 10
-number_cores, 1

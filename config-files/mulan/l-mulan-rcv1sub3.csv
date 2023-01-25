@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-mulan-rcv1sub3
-Package, mulan
-dataset_name, rcv1sub3
-number_dataset, 58
-number_folds, 10
-number_cores, 1

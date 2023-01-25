@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-mulan-yahoo_society
-Package, mulan
-dataset_name, yahoo_society
-number_dataset, 88
-number_folds, 10
-number_cores, 1

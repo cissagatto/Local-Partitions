@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-mulan-yahoo_arts
-Package, mulan
-dataset_name, yahoo_arts
-number_dataset, 78
-number_folds, 10
-number_cores, 1
