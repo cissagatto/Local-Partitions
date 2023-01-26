@@ -84,6 +84,7 @@ See more information about Conda environments [here](https://docs.conda.io/proje
 You can also run this code using the AppTainer [container](https://1drv.ms/u/s!Aq6SGcf6js1mw4hcVuz_IN8_Bh1oFQ?e=5NuyxX) that I'm using to run this code in a SLURM cluster. Please, check this [tutorial](https://rpubs.com/cissagatto/apptainer-slurm-r) (in portuguese) to see how to do that. 
 
 
+
 ## STEP 5
 To run this code you will need a configuration file saved in *csv* format and with the following information:
 
@@ -137,10 +138,9 @@ Rscript local.R "~/Local-Partitions/config-files/clus/l-clus-GpositiveGO.csv"
 The results are stored in a folder called REPORTS in the project root
 
 
-
 ## DOWNLOAD RESULTS
 
-| Clus | Mulan | Python | Utiml | 
+| [Clus](https://1drv.ms/u/s!Aq6SGcf6js1mrY0-nATefiTagEnPxA?e=q0laSK) | [Mulan](https://1drv.ms/u/s!Aq6SGcf6js1msssS5Mx91QF5odzzjQ?e=JXREoy) | [Python](https://1drv.ms/u/s!Aq6SGcf6js1mw4kRQhSBYhBhUQShQw?e=hLRYgc) | [Utiml](https://1drv.ms/u/s!Aq6SGcf6js1msssRME9OReqIOqKNug?e=8OHtOS) | 
 
 
 ## Acknowledgment
