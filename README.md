@@ -71,8 +71,6 @@ To run this experiment you need the _X-Fold Cross-Validation_ files and they mus
 ## STEP 3
 You need to have installed all the Java, R and Python libraries required to execute this code on your machine. This code does not provide any type of automatic package installation!
 
-
-## STEP 4
 You can use the [Conda Environment](https://1drv.ms/u/s!Aq6SGcf6js1mw4hbhU9Raqarl8bH8Q?e=IA2aQs) that I created to perform this experiment. Below are the links to download the files. Try to use the command below to extract the environment to your computer:
 
 ```
@@ -85,7 +83,7 @@ You can also run this code using the AppTainer [container](https://1drv.ms/u/s!A
 
 
 
-## STEP 5
+## STEP 4
 To run this code you will need a configuration file saved in *csv* format and with the following information:
 
 | Config         | Value                                                                     | 
@@ -150,9 +148,27 @@ This study is financed in part by the Coordenação de Aperfeiçoamento de Pesso
 This study is financed in part by the Conselho Nacional de Desenvolvimento Científico e Tecnológico - Brasil (CNPQ) - Process number 200371/2022-3.
 
 
+
+## Acknowledgment
+
+This study is financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) - Finance Code 001
+
+This study is financed in part by the Conselho Nacional de Desenvolvimento Científico e Tecnológico - Brasil (CNPQ) - Process number 200371/2022-3.
+
 ## Links
 
-| [Site](https://sites.google.com/view/professor-cissa-gatto) | [Post-Graduate Program in Computer Science](http://ppgcc.dc.ufscar.br/pt-br) | [Computer Department](https://site.dc.ufscar.br/) |  [Biomal](http://www.biomal.ufscar.br/) | [CNPQ](https://www.gov.br/cnpq/pt-br) | [Ku Leuven](https://kulak.kuleuven.be/) | [Embarcados](https://www.embarcados.com.br/author/cissa/) | [Read Prensa](https://prensa.li/@cissa.gatto/) | [Linkedin Company](https://www.linkedin.com/company/27241216) | [Linkedin Profile](https://www.linkedin.com/in/elainececiliagatto/) | [Instagram](https://www.instagram.com/cissagatto) | [Facebook](https://www.facebook.com/cissagatto) | [Twitter](https://twitter.com/cissagatto) | [Twitch](https://www.twitch.tv/cissagatto) | [Youtube](https://www.youtube.com/CissaGatto) |
+| [Site](https://sites.google.com/view/professor-cissa-gatto) | 
+[CAPES](https://www.gov.br/capes/pt-br) | [CNPQ](https://www.gov.br/cnpq/pt-br) | 
+[ResearchGate](https://www.researchgate.net/profile/Elaine-Gatto) | 
+[UFSCar](https://www.ufscar.br/) |
+[Post-Graduate Program in Computer Science](http://ppgcc.dc.ufscar.br/pt-br) | 
+[Computer Department](https://site.dc.ufscar.br/) |  [Biomal](http://www.biomal.ufscar.br/) |
+[Ku Leuven](https://kulak.kuleuven.be/) | [Embarcados](https://www.embarcados.com.br/author/cissa/) | 
+[Read Prensa](https://prensa.li/@cissa.gatto/) |
+[Rpubs](https://rpubs.com/cissagatto) |
+[Google Scholar](https://scholar.google.com/citations?user=f8UJfeYAAAAJ&hl=pt-BR) |
+[Linkedin Company](https://www.linkedin.com/company/27241216) | 
+[Linkedin Profile](https://www.linkedin.com/in/elainececiliagatto/) | [Instagram](https://www.instagram.com/cissagatto) | [Facebook](https://www.facebook.com/cissagatto) | [Twitter](https://twitter.com/cissagatto) | [Twitch](https://www.twitch.tv/cissagatto) | [Youtube](https://www.youtube.com/CissaGatto) |
 
 ## Report Error
 Please contact me: elainececiliagatto@gmail.com
