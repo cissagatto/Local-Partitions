@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-gasch2
-Package, python
-dataset_name, gasch2
-number_dataset, 37
-number_folds, 10
-number_cores, 1

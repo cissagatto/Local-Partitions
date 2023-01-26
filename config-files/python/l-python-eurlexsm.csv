@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-eurlexsm
-Package, python
-dataset_name, eurlexsm
-number_dataset, 32
-number_folds, 10
-number_cores, 1

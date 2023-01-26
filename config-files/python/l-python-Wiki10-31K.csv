@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-Wiki10-31K
-Package, python
-dataset_name, Wiki10-31K
-number_dataset, 77
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-pheno
-Package, python
-dataset_name, pheno
-number_dataset, 53
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-utiml-rcv1sub1
-Package, utiml
-dataset_name, rcv1sub1
-number_dataset, 56
-number_folds, 10
-number_cores, 1

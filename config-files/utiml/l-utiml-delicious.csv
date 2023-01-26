@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-utiml-delicious
-Package, utiml
-dataset_name, delicious
-number_dataset, 23
-number_folds, 10
-number_cores, 1

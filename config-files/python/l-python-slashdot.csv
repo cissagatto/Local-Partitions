@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-slashdot
-Package, python
-dataset_name, slashdot
-number_dataset, 64
-number_folds, 10
-number_cores, 1

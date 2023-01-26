@@ -89,8 +89,8 @@ args <- commandArgs(TRUE)
 
 # config_file = "/home/biomal/Local-Partitions/config-files/clus/l-clus-GpositiveGO.csv"
 # config_file = "/home/biomal/Local-Partitions/config-files/utiml/l-utiml-GpositiveGO.csv"
-# config_file = "/home/biomal/Local-Partitions/config-files/mulan/l-utiml-GpositiveGO.csv"
-# config_file = "/home/biomal/Local-Partitions/config-files/python/l-utiml-GpositiveGO.csv"
+# config_file = "/home/biomal/Local-Partitions/config-files/mulan/l-mulan-GpositiveGO.csv"
+# config_file = "/home/biomal/Local-Partitions/config-files/python/l-python-GpositiveGO.csv"
 
 config_file <- args[1]
 

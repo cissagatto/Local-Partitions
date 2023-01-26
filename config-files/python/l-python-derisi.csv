@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-derisi
-Package, python
-dataset_name, derisi
-number_dataset, 24
-number_folds, 10
-number_cores, 1

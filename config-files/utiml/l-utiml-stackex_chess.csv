@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-utiml-stackex_chess
-Package, utiml
-dataset_name, stackex_chess
-number_dataset, 67
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-utiml-stackex_coffee
-Package, utiml
-dataset_name, stackex_coffee
-number_dataset, 68
-number_folds, 10
-number_cores, 1

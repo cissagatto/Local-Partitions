@@ -84,20 +84,20 @@ execute.python <- function(ds,
     
     ########################################################################################
     cat("\n\tOpen Train file ")
-    setwd(diretorios$folderCVTR)
-    nome_arq_tr = paste(dataset_name, "-Split-Tr-", f, ".csv", sep="")
+    nome_arq_tr = paste(diretorios$folderCVTR, "/" ,
+                        dataset_name, "-Split-Tr-", f, ".csv", sep="")
     arquivo_tr = data.frame(read.csv(nome_arq_tr))
     
     #######################################################################################
     cat("\n\tOpen Validation file ")
-    setwd(diretorios$folderCVVL)
-    nome_arq_vl = paste(dataset_name, "-Split-Vl-", f, ".csv", sep="")
+    nome_arq_vl = paste(diretorios$folderCVVL, "/" ,
+                        dataset_name, "-Split-Vl-", f, ".csv", sep="")
     arquivo_vl = data.frame(read.csv(nome_arq_vl))
     
     ########################################################################################
     cat("\n\tOpen Test file ")
-    setwd(diretorios$folderCVTS)
-    nome_arq_ts = paste(dataset_name, "-Split-Ts-", f, ".csv", sep="")
+    nome_arq_ts = paste(diretorios$folderCVTS, "/", 
+                        dataset_name, "-Split-Ts-", f, ".csv", sep="")
     arquivo_ts = data.frame(read.csv(nome_arq_ts))
     
     ########################################################################################
@@ -116,111 +116,58 @@ execute.python <- function(ds,
     cat("\n\tLabel Index")
     number = seq(ds$LabelStart, ds$LabelEnd, by=1)
     
-    #####################################################################
-    cat("\n\tTRAIN: Transform into MLDR")
-    str.train = paste(ds$Name, "-split-tr-", f,
-                      "-weka.filters.unsupervised.attribute.NumericToNominal-R", 
-                      ds$LabelStart, "-", ds$LabelEnd, sep="")
     
-    train.mldr <- mldr::mldr_from_dataframe(dataframe = arquivo_tr2, 
-                                            labelIndices = number, 
-                                            name = str.train)
+    ##################################################################
+    # EXECUTE ECC PYTHON
+    str.execute = paste("python3 ", FolderScripts,
+                        "/br-teste.py ", 
+                        nome_arq_tr, " ",
+                        nome_arq_vl,  " ",
+                        nome_arq_ts, " ", 
+                        ds$LabelStart, " ",
+                        ds$LabelEnd, " ", 
+                        folderSplit, " ",
+                        names.labels, " ",
+                        sep="")
     
-    train.name = paste(folderSplit, "/", ds$Name, "-split-tr-", f, ".arff", sep="")
-    train.xml.name = paste(folderSplit, "/", ds$Name, "-split-tr-", f, sep="")
-    mldr::write_arff(train.mldr, train.xml.name, write.xml = T)
+    # EXECUTA
+    print(system(str.execute))
     
+    # str.1 = paste("mv ", FolderScripts, "/y_pred.csv ", Folder.Tested.Split, sep="")
+    # str.2 = paste("mv ", FolderScripts, "/y_true.csv ", Folder.Tested.Split, sep="")
+    # print(system(str.1))
+    # print(system(str.2))
     
-    #####################################################################
-    cat("\n\tTEST: Transform into MLDR")
-    str.test = paste(ds$Name, "-split-ts-", f,
-                     "-weka.filters.unsupervised.attribute.NumericToNominal-R", 
-                     ds$LabelStart, "-", ds$LabelEnd, sep="")
-    
-    test.mldr <- mldr::mldr_from_dataframe(dataframe = arquivo_ts, 
-                                           labelIndices = number, 
-                                           name = str.test)
-    
-    test.name = paste(folderSplit, "/", ds$Name, "-split-ts-", f, ".arff", sep="")
-    test.xml.name = paste(folderSplit, "/", ds$Name, "-split-ts-", f, sep="")
-    mldr::write_arff(test.mldr, test.xml.name, write.xml = T)
+    setwd(Folder.Tested.Split)
+    y_preds = data.frame(read.csv("y_pred.csv"))
+    y_trues = data.frame(read.csv("y_true.csv"))
     
     #####################################################################
-    cat("\n\n\t#=========================================#")
-    cat("\n\t# Execute BR MULAN\n")
-    
-    mulan = paste("/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java -Xmx8g -jar ", 
-                  diretorios$folderUtils, "/mymulanexec.jar", sep="")
-    
-    mulan.str <- paste(mulan, " -t ", train.name, " -T ", test.name, " -x ",
-                       train.xml.name, ".xml -o out.csv -c J48 -a BR", sep = "")
-    
-    setwd(folderSplit)
-    tempo <- system.time(res <- system(mulan.str))
-    
-    if(res!=0){
-      cat("\n\tThere's some problem with BR Mulan\n")
-      break 
-    } else {
-      cat("\n\tBR Mulan executed with sucess!\n")
-    }
-    
-    result_set <- t(data.matrix(tempo))
-    setwd(folderSplit)
-    write.csv(result_set, "mulan-runtime.csv")
-    
-    cat("\n\t#=========================================#\n\n")
-    
-    
-    #####################################################################
-    cat("\n\tOpen mulan preds")
-    setwd(folderSplit)
-    mulan.preds <- data.frame(as.matrix(read.csv("pred_out.csv", header = FALSE)))
-    names(mulan.preds ) = names.labels
-    
-    #####################################################################
-    cat("\n\tOpen test file")
-    test = paste(folderSplit, "/", ds$Name, "-split-ts-", f, sep="")
-    test.file <- mldr(test, force_read_from_file = T)
-    
-    #####################################################################
-    cat("\n\tMULAN result")
-    mulan.result <- multilabel_evaluate(test.file, mulan.preds, labels=TRUE)
-    setwd(folderSplit)
-    write.csv(data.frame(mulan.result$multilabel), "mulan-prediction-1.csv")
-    write.csv(data.frame(mulan.result$labels), "mulan-prediction-2.csv")
-    
-    #####################################################################
-    cat("\n\tUTIML Threshold")
-    utiml.threshold <- scut_threshold(mulan.preds, test.file)
-    final.predictions <- data.frame(as.matrix(fixed_threshold(mulan.preds, 
+    cat("\n\tUTIML Threshold\n")
+    utiml.threshold <- scut_threshold(y_preds, test.file)
+    final.predictions <- data.frame(as.matrix(fixed_threshold(y_preds, 
                                                               utiml.threshold)))
     
-    #####################################################################
-    cat("\n\tSaving preds")
-    setwd(folderSplit)
+    setwd(Folder.Tested.Split)
     write.csv(final.predictions, "y_predict.csv", row.names = FALSE)
-    write.csv(y_true, "y_true.csv", row.names = FALSE)
     
-    names(y_true) = paste(names.labels, "-true", sep="")
-    names(final.predictions) = paste(names.labels, "-pred", sep="")
-    names(mulan.preds ) = paste(names.labels, "-original", sep="")
-    as.matrix(mulan.preds)
-    
-    all.preds = cbind(y_true, final.predictions, mulan.preds)
-    
-    setwd(folderSplit)
-    write.csv(all.preds, "fold-predictions.csv", row.names = FALSE)
     
     #####################################################################
-    cat("\n\tDeleting files")
-    setwd(folderSplit)
-    unlink(train.name)
-    unlink(test.name)
-    unlink(paste(train.xml.name, ".xml", sep=""))
-    unlink(paste(test.xml.name, ".xml", sep=""))
-    unlink("pred_out.csv")
+    cat("\n\tSave original and pruned predictions\n")
+    pred.o = paste(colnames(y_preds), "-pred-ori", sep="")
+    names(y_preds) = pred.o
     
+    pred.c = paste(colnames(final.predictions), "-pred-cut", sep="")
+    names(final.predictions) = pred.c
+    
+    true.labels = paste(colnames(y_trues), "-true", sep="")
+    names(y_trues) = true.labels
+    
+    all.predictions = cbind(y_preds, final.predictions, y_trues)
+    setwd(Folder.Tested.Split)
+    write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
+    
+    unlink("y_pred.csv")
     # f = f + 1
     gc()
   }

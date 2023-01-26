@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-stackex_cs
-Package, python
-dataset_name, stackex_cs
-number_dataset, 70
-number_folds, 10
-number_cores, 1

@@ -1,8 +1,0 @@
-Config, Value
-Dataset_Path, /home/biomal/Datasets
-Temporary_Path, /dev/shm/el-python-reutersk500
-Package, python
-dataset_name, reutersk500
-number_dataset, 61
-number_folds, 10
-number_cores, 1

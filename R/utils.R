@@ -129,6 +129,7 @@ directories <- function(dataset_name, folderResults){
     n_folderDatasetX = length(dir_folderDatasetX)
   }
   
+  
   #############################################################################
   # CROSS VALIDATION FOLDER:                                                  #
   #         "/dev/shm/results/Dataset/GpositiveGO/CrossValidation"            #
@@ -145,6 +146,7 @@ directories <- function(dataset_name, folderResults){
     dir_folderCV = dir(folderCV)
     n_folderCV = length(dir_folderCV)
   }
+  
   
   #############################################################################
   # CROSS VALIDATION TRAIN FILES/FOLDER:                                      #
@@ -163,6 +165,7 @@ directories <- function(dataset_name, folderResults){
     n_folderCVTR = length(dir_folderCVTR)
   }
   
+  
   #############################################################################
   # CROSS VALIDATION TEST FILES/FOLDER:                                       #
   #          "/dev/shm/results/Dataset/GpositiveGO/CrossValidation/Ts"        #
@@ -179,6 +182,7 @@ directories <- function(dataset_name, folderResults){
     dir_folderCVTS = dir(folderCVTS)
     n_folderCVTS = length(dir_folderCVTS)
   }
+  
   
   #############################################################################
   # CROSS VALIDATION VALIDATION FILES/FOLDER:                                 #
@@ -197,6 +201,7 @@ directories <- function(dataset_name, folderResults){
     n_folderCVVL = length(dir_folderCVVL)
   }
   
+  
   #############################################################################
   # CROSS VALIDATION LABEL SPACE FILES/FOLDER:                                #
   #         "/dev/shm/results/Dataset/GpositiveGO/LabelSpace"                 #
@@ -213,6 +218,7 @@ directories <- function(dataset_name, folderResults){
     dir_folderLabelSpace = dir(folderLabelSpace)
     n_folderLabelSpace = length(dir_folderLabelSpace)
   }
+  
   
   #############################################################################
   # CROSS VALIDATION LABELS NAMES FILES/FOLDER:                               #
@@ -245,6 +251,7 @@ directories <- function(dataset_name, folderResults){
   retorno$folderLabelSpace = folderLabelSpace
   retorno$folderNamesLabels = folderNamesLabels
   
+  
   # return folder contents
   retorno$dir_folderLocal = dir_folderLocal
   retorno$dir_folderResults = dir_folderResults
@@ -257,6 +264,7 @@ directories <- function(dataset_name, folderResults){
   retorno$dir_folderLabelSpace = dir_folderLabelSpace
   retorno$dir_folderNamesLabels = dir_folderNamesLabels
   
+  
   # return of the number of objects inside the folder
   retorno$n_folderLocal = n_folderLocal
   retorno$n_folderResults = n_folderResults
@@ -268,6 +276,7 @@ directories <- function(dataset_name, folderResults){
   retorno$n_folderCVVL = n_folderCVVL
   retorno$n_folderLabelSpace = n_folderLabelSpace
   retorno$n_folderNamesLabels = n_folderNamesLabels
+  
   
   return(retorno)
   gc()
