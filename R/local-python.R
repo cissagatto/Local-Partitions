@@ -57,17 +57,17 @@ execute.python <- function(ds,
   # from fold = 1 to number_folds
   f = 1
   ecc.local.parallel <- foreach(f = 1:number_folds) %dopar% {
-    # while(f<=number_folds){
+  # while(f<=number_folds){
     
     ####################################################################################
-    folderRoot = "~/Local-Partitions/"
-    folderScripts = paste(folderRoot, "/R/", sep="")
+    FolderRoot = "~/Local-Partitions"
+    FolderScripts = "~/Local-Partitions/R"
     
     ####################################################################################
-    setwd(folderScripts)
+    setwd(FolderScripts)
     source("libraries.R")
     
-    setwd(folderScripts)
+    setwd(FolderScripts)
     source("utils.R")
     
     ####################################################################################
@@ -119,36 +119,41 @@ execute.python <- function(ds,
     
     ##################################################################
     # EXECUTE ECC PYTHON
-    str.execute = paste("python3 ", FolderScripts,
-                        "/br-teste.py ", 
+    # /home/biomal/Local-Partitions/Utils/br-python
+    str.execute = paste("python3 ", 
+                        diretorios$folderUtils,
+                        "/br-python/main.py ", 
                         nome_arq_tr, " ",
                         nome_arq_vl,  " ",
                         nome_arq_ts, " ", 
-                        ds$LabelStart, " ",
+                        ds$AttEnd, " ",
                         ds$LabelEnd, " ", 
-                        folderSplit, " ",
-                        names.labels, " ",
+                        folderSplit,
                         sep="")
     
     # EXECUTA
-    print(system(str.execute))
+    res = print(system(str.execute))
+    
+    if(res!=0){
+      break
+    }
     
     # str.1 = paste("mv ", FolderScripts, "/y_pred.csv ", Folder.Tested.Split, sep="")
     # str.2 = paste("mv ", FolderScripts, "/y_true.csv ", Folder.Tested.Split, sep="")
     # print(system(str.1))
     # print(system(str.2))
     
-    setwd(Folder.Tested.Split)
+    setwd(folderSplit)
     y_preds = data.frame(read.csv("y_pred.csv"))
     y_trues = data.frame(read.csv("y_true.csv"))
     
     #####################################################################
     cat("\n\tUTIML Threshold\n")
-    utiml.threshold <- scut_threshold(y_preds, test.file)
+    utiml.threshold <- scut_threshold(y_preds, arquivo_ts)
     final.predictions <- data.frame(as.matrix(fixed_threshold(y_preds, 
                                                               utiml.threshold)))
     
-    setwd(Folder.Tested.Split)
+    setwd(folderSplit)
     write.csv(final.predictions, "y_predict.csv", row.names = FALSE)
     
     
@@ -164,11 +169,12 @@ execute.python <- function(ds,
     names(y_trues) = true.labels
     
     all.predictions = cbind(y_preds, final.predictions, y_trues)
-    setwd(Folder.Tested.Split)
+    setwd(folderSplit)
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
     
     unlink("y_pred.csv")
-    # f = f + 1
+    
+    #f = f + 1
     gc()
   }
   
@@ -202,11 +208,11 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
   avaliaParalel <- foreach (f = 1:number_folds) %dopar%{    
     #while(f<=number_folds){
     
-    folderRoot = "~/Local-Partitions/"
-    folderScripts = paste(folderRoot, "/R/", sep="")
+    FolderRoot = "~/Local-Partitions"
+    FolderScripts = "~/Local-Partitions/R"
     
     ####################################################################################
-    setwd(folderScripts)
+    setwd(FolderScripts)
     source("utils.R")
     
     library("mldr")
@@ -278,13 +284,13 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   retorno = list()
   
   # vector with names measures
-  medidas = c("accuracy","average-precision","clp","coverage","F1","hamming-loss","macro-AUC",
+  measures = c("accuracy","average-precision","clp","coverage","F1","hamming-loss","macro-AUC",
               "macro-F1","macro-precision","macro-recall","margin-loss","micro-AUC","micro-F1",
               "micro-precision","micro-recall","mlp","one-error","precision","ranking-loss",
               "recall","subset-accuracy","wlp")
   
   # dta frame
-  confMatFinal = data.frame(medidas)
+  confMatFinal = data.frame(measures)
   folds = c("")
   
   # from fold = 1 to number_labels
