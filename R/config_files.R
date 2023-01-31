@@ -37,7 +37,7 @@ FolderScripts = "~/Local-Partitions/R"
 
 
 ###############################################################################
-# LOAD LIBRARY/PACKAGE                                                        #
+# LOAD LIBRARY/Implementation                                                        #
 ###############################################################################
 library(stringr)
 
@@ -60,20 +60,20 @@ if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-pacote = c("clus", "mulan", "python", "utiml")
+Implementation = c("clus", "mulan", "python", "utiml")
 
 j = 1
-while(j<=length(pacote)){
+while(j<=length(Implementation)){
   
   ###############################################################################
   # CREATING FOLDER TO SAVE CONFIG FILES                                        #
   ###############################################################################
-  FolderClassifier = paste(FolderCF, "/", pacote[j], sep="")
+  FolderClassifier = paste(FolderCF, "/", Implementation[j], sep="")
   if(dir.exists(FolderClassifier)==FALSE){dir.create(FolderClassifier)}
 
   
   cat("\n\n==================================")
-  cat("\n Classificador:", pacote[j])
+  cat("\n Classificador:", Implementation[j])
   cat("\n==================================\n\n")
   
   i = 1
@@ -86,7 +86,7 @@ while(j<=length(pacote)){
     cat("\n\tdataset = ", ds$Name)
     
     # Confi File Name
-    file_name = paste(FolderClassifier, "/l-", pacote[j], 
+    file_name = paste(FolderClassifier, "/l-", Implementation[j], 
                       "-", ds$Name, ".csv", sep="")
     
     # Starts building the configuration file
@@ -104,38 +104,38 @@ while(j<=length(pacote)){
     # write("Dataset_Path, ~/Local-Partitions/Datasets",
     #      file = output.file, append = TRUE)
     
-    write("Dataset_Path, /home/elaine/Datasets",
-          file = output.file, append = TRUE)
+    write("Dataset_Path, /Datasets",
+           file = output.file, append = TRUE)
     
     # job name
-    job_name = paste("el-", pacote[j], "-", ds$Name,sep = "")
+    job_name = paste("l-", Implementation[j], "-", ds$Name,sep = "")
     
     # directory name
-    # folder_name = paste("/scratch/", job_name, sep = "")
-    folder_name = paste("/dev/shm/", job_name, sep = "")
+    folder_name = paste("/scratch/", job_name, sep = "")
+    # folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
     # cluster model where your experiment will be run.
-    str1 = paste("Temporary_Path, ", folder_name, sep="")
-    write(str1,file = output.file, append = TRUE)
+    str.0 = paste("Temporary_Path, ", folder_name, sep="")
+    write(str.0,file = output.file, append = TRUE)
     
-    str1 = paste("Package, ", pacote[j], sep="")
-    write(str1, file = output.file, append = TRUE)
+    str.1 = paste("Implementation, ", Implementation[j], sep="")
+    write(str.1, file = output.file, append = TRUE)
     
     # dataset name
-    str3 = paste("dataset_name, ", ds$Name, sep="")
-    write(str3, file = output.file, append = TRUE)
+    str.2 = paste("Dataset_name, ", ds$Name, sep="")
+    write(str.2, file = output.file, append = TRUE)
     
     # Dataset number according to "datasets-original.csv" file
-    str2 = paste("number_dataset, ", ds$Id, sep="")
-    write(str2, file = output.file, append = TRUE)
+    str.3 = paste("Number_dataset, ", ds$Id, sep="")
+    write(str.3, file = output.file, append = TRUE)
     
     # Number used for X-Fold Cross-Validation
-    write("number_folds, 10", file = output.file, append = TRUE)
+    write("Number_folds, 10", file = output.file, append = TRUE)
     
     # Number of cores to use for parallel processing
-    write("number_cores, 10", file = output.file, append = TRUE)
+    write("Number_cores, 10", file = output.file, append = TRUE)
     
     # finish writing to the configuration file
     close(output.file)
