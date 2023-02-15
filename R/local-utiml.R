@@ -115,7 +115,7 @@ execute.utiml <- function(ds,
     ds_test = mldr_from_dataframe(arquivo_ts, labelIndices = number)
     
     # aplicando modelo br
-    brmodel = br(ds_train, "C5.0", seed=123)
+    brmodel = br(ds_train, "RF", seed=123)
     
     # testando modelo br
     predict <- predict(brmodel, ds_test)

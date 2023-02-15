@@ -152,8 +152,8 @@ execute.mulan <- function(ds,
     mulan = paste("/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java -Xmx8g -jar ", 
                   diretorios$folderUtils, "/mymulanexec.jar", sep="")
     
-    mulan.str <- paste(mulan, " -t ", train.name, " -T ", test.name, " -x ",
-                       train.xml.name, ".xml -o out.csv -c J48 -a BR", sep = "")
+    # mulan.str <- paste(mulan, " -t ", train.name, " -T ", test.name, " -x ",
+    #@                   train.xml.name, ".xml -o out.csv -c J48 -a BR", sep = "")
     
     setwd(folderSplit)
     tempo <- system.time(res <- system(mulan.str))

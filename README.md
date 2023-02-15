@@ -24,6 +24,9 @@ This code source is composed of the project R to be used in RStudio IDE and also
 09. config_files.R
 10. jobs.R
 
+_We used Random Forest as base classifier for all versions._
+_local-mulan is not implemented_
+
 
 ## Preparing your experiment
 
