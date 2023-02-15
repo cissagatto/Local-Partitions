@@ -2,13 +2,18 @@ import sys
 import pandas as pd
 import numpy as np
 from skmultilearn.problem_transform import BinaryRelevance
-from sklearn.tree import DecisionTreeRegressor
+# from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier
 
 
 if __name__ == '__main__':
     
+    # random_state = 0
+    # baseModel = DecisionTreeRegressor(random_state = random_state)
+    
     random_state = 0
-    baseModel = DecisionTreeRegressor(random_state = random_state)
+    n_estimators = 200
+    baseModel = RandomForestClassifier(n_estimators = n_estimators, random_state = random_state)
     
     train = pd.read_csv(sys.argv[1])
     valid = pd.read_csv(sys.argv[2])
