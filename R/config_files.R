@@ -98,27 +98,31 @@ while(j<=length(Implementation)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
+    write("Dataset_Path, \"/home/biomal/Datasets\"", 
+         file = output.file, append = TRUE)
+    
     # write("Dataset_Path, \"/home/u704616/Datasets\"", 
     #       file = output.file, append = TRUE)
     
     # write("Dataset_Path, ~/Local-Partitions/Datasets",
     #      file = output.file, append = TRUE)
     
-    write("Dataset_Path, /Datasets",
-           file = output.file, append = TRUE)
+    # write("Dataset_Path, /Datasets",
+    #       file = output.file, append = TRUE)
     
     # job name
     job_name = paste("l-", Implementation[j], "-", ds$Name,sep = "")
     
     # directory name
-    folder_name = paste("/scratch/", job_name, sep = "")
-    # folder_name = paste("/dev/shm/", job_name, sep = "")
+    # folder_name = paste("/scratch/", job_name, sep = "")
+    folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
     # cluster model where your experiment will be run.
     str.0 = paste("Temporary_Path, ", folder_name, sep="")
     write(str.0,file = output.file, append = TRUE)
+    
     
     str.1 = paste("Implementation, ", Implementation[j], sep="")
     write(str.1, file = output.file, append = TRUE)
@@ -135,7 +139,7 @@ while(j<=length(Implementation)){
     write("Number_folds, 10", file = output.file, append = TRUE)
     
     # Number of cores to use for parallel processing
-    write("Number_cores, 10", file = output.file, append = TRUE)
+    write("Number_cores, 1", file = output.file, append = TRUE)
     
     # finish writing to the configuration file
     close(output.file)

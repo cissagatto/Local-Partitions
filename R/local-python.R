@@ -122,7 +122,7 @@ execute.python <- function(ds,
     # /home/biomal/Local-Partitions/Utils/br-python
     str.execute = paste("python3 ", 
                         diretorios$folderUtils,
-                        "/br-python/main.py ", 
+                        "/main.py ", 
                         nome_arq_tr, " ",
                         nome_arq_vl,  " ",
                         nome_arq_ts, " ", 

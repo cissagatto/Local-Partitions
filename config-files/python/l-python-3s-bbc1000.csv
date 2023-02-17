@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, "/home/elaine/Datasets"
+Temporary_Path, /dev/shm/l-python-3s-bbc1000
+Implementation, python
+Dataset_name, 3s-bbc1000
+Number_dataset, 1
+Number_folds, 10
+Number_cores, 10

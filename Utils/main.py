@@ -2,7 +2,6 @@ import sys
 import pandas as pd
 import numpy as np
 from skmultilearn.problem_transform import BinaryRelevance
-# from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier
 
 
