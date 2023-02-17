@@ -60,20 +60,22 @@ if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-Implementation = c("clus", "mulan", "python", "utiml")
+Implementation.1 = c("clus", "mulan", "python", "utiml")
+Implementation.2 = c("c", "m", "p", "u")
+
 
 j = 1
-while(j<=length(Implementation)){
+while(j<=length(Implementation.1)){
   
   ###############################################################################
   # CREATING FOLDER TO SAVE CONFIG FILES                                        #
   ###############################################################################
-  FolderClassifier = paste(FolderCF, "/", Implementation[j], sep="")
+  FolderClassifier = paste(FolderCF, "/", Implementation.1[j], sep="")
   if(dir.exists(FolderClassifier)==FALSE){dir.create(FolderClassifier)}
 
   
   cat("\n\n==================================")
-  cat("\n Classificador:", Implementation[j])
+  cat("\n Classificador:", Implementation.1[j])
   cat("\n==================================\n\n")
   
   i = 1
@@ -86,8 +88,8 @@ while(j<=length(Implementation)){
     cat("\n\tdataset = ", ds$Name)
     
     # Confi File Name
-    file_name = paste(FolderClassifier, "/l-", Implementation[j], 
-                      "-", ds$Name, ".csv", sep="")
+    file_name = paste(FolderClassifier, "/l", Implementation.2[j], "-", 
+                      ds$Name, ".csv", sep="")
     
     # Starts building the configuration file
     output.file <- file(file_name, "wb")
@@ -98,23 +100,13 @@ while(j<=length(Implementation)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-    write("Dataset_Path, \"/home/biomal/Datasets\"", 
+    write("Dataset_Path, /home/biomal/Datasets/", 
          file = output.file, append = TRUE)
     
-    # write("Dataset_Path, \"/home/u704616/Datasets\"", 
-    #       file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, ~/Local-Partitions/Datasets",
-    #      file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, /Datasets",
-    #       file = output.file, append = TRUE)
-    
     # job name
-    job_name = paste("l-", Implementation[j], "-", ds$Name,sep = "")
+    job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
     
     # directory name
-    # folder_name = paste("/scratch/", job_name, sep = "")
     folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
@@ -124,7 +116,7 @@ while(j<=length(Implementation)){
     write(str.0,file = output.file, append = TRUE)
     
     
-    str.1 = paste("Implementation, ", Implementation[j], sep="")
+    str.1 = paste("Implementation, ", Implementation.1[j], sep="")
     write(str.1, file = output.file, append = TRUE)
     
     # dataset name
