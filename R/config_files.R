@@ -60,8 +60,8 @@ if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-Implementation.1 = c("clus", "mulan", "python", "utiml")
-Implementation.2 = c("c", "m", "p", "u")
+Implementation.1 = c("clus", "python")
+Implementation.2 = c("c", "p")
 
 
 j = 1
@@ -100,14 +100,14 @@ while(j<=length(Implementation.1)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-    write("Dataset_Path, /home/biomal/Datasets/", 
+    write("Dataset_Path, /Datasets/", 
          file = output.file, append = TRUE)
     
     # job name
     job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
     
     # directory name
-    folder_name = paste("/dev/shm/", job_name, sep = "")
+    folder_name = paste("/tmp/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
@@ -131,7 +131,7 @@ while(j<=length(Implementation.1)){
     write("Number_folds, 10", file = output.file, append = TRUE)
     
     # Number of cores to use for parallel processing
-    write("Number_cores, 1", file = output.file, append = TRUE)
+    write("Number_cores, 10", file = output.file, append = TRUE)
     
     # finish writing to the configuration file
     close(output.file)

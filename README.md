@@ -1,5 +1,5 @@
 # Local Partitions
-This code is part of my doctoral research at PPG-CC/DC/UFSCar. The aim is build and test local partitions for multilabel classification.
+This code is part of my PhD research at PPG-CC/DC/UFSCar in colaboration with Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium. The aim is build and test local partitions for multilabel classification.
 
 
 ## How to cite 
