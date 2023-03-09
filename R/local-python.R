@@ -437,6 +437,11 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   final.pred.macro.auc = final.pred.macro.auc[-1,]
   final.pred.macro.auc = data.frame(fold, macro.auc = final.pred.macro.auc$value)
   
+  setwd(diretorios$folderLocal)
+  write.csv(final.pred.auc, "pred-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.macro.auc, "pred-macro-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.micro.auc, "pred-micro-auc.csv", row.names = FALSE)
+  
   
   #######################
   # calculando a média dos 10 folds para cada medida

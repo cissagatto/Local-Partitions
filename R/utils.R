@@ -758,7 +758,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS INFORMAÇÕES DO ROC SEPARADAMENTE
-  name = paste(Folder, "/proba-roc.txt", sep="")
+  name = paste(Folder, "/roc-proba-1.txt", sep="")
   output.file <- file(name, "wb")
   
   write(" ", file = output.file, append = TRUE)
@@ -817,7 +817,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS INFORMAÇÕES DO ROC SEPARADAMENTE
-  name = paste(Folder, "/pred-roc.txt", sep="")
+  name = paste(Folder, "/roc-pred-1.txt", sep="")
   output.file <- file(name, "wb")
   
   write(" ", file = output.file, append = TRUE)
@@ -877,7 +877,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS OUTRAS INFORMAÇÕES
-  name = paste(Folder, "/pred-roc.txt", sep="")
+  name = paste(Folder, "/roc-pred-2.txt", sep="")
   sink(name, type = "output")
   print(res.pred$roc)
   cat("\n\n")
@@ -887,7 +887,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS OUTRAS INFORMAÇÕES
-  name = paste(Folder, "/proba-roc.txt", sep="")
+  name = paste(Folder, "/roc-proba-2.txt", sep="")
   sink(name, type = "output")
   print(res.proba$roc)
   cat("\n\n")
@@ -978,7 +978,7 @@ predictions.information <- function(nomes.rotulos,
   names(FNi) = fni
   
   fpnt = data.frame(TPi, FPi, FNi, TNi)
-  name = paste(folder, "/fpnt.csv", sep="")
+  name = paste(folder, "/tfpn.csv", sep="")
   write.csv(fpnt, name, row.names = FALSE)
   
   # total de verdadeiros positivos
@@ -1004,7 +1004,7 @@ predictions.information <- function(nomes.rotulos,
   matriz_confusao_por_rotulos = data.frame(TPl, FPl, FNl, TNl)
   colnames(matriz_confusao_por_rotulos) = c("TP","FP", "FN", "TN")
   row.names(matriz_confusao_por_rotulos) = nomes.rotulos
-  name = paste(folder, "/mc.csv", sep="")
+  name = paste(folder, "/matrix-confusion-2.csv", sep="")
   write.csv(matriz_confusao_por_rotulos, name)
   
 }
