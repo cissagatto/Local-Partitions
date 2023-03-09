@@ -12,8 +12,8 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -60,8 +60,8 @@ if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-Implementation.1 = c("clus", "python")
-Implementation.2 = c("c", "p")
+Implementation.1 = c("rf", "clus")
+Implementation.2 = c("rf", "c")
 
 
 j = 1
@@ -100,14 +100,14 @@ while(j<=length(Implementation.1)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-    write("Dataset_Path, /Datasets/", 
+    write("Dataset_Path, /home/biomal/Datasets/", 
          file = output.file, append = TRUE)
     
     # job name
     job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
     
     # directory name
-    folder_name = paste("/tmp/", job_name, sep = "")
+    folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 

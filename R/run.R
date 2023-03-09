@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -267,11 +267,11 @@ executeLP <- function(ds,
     setwd(FolderScripts)
     source("local-python.R")
     
-    str0 = "~/Local-Partitions/Reports"
-    if(dir.exists(str0)==FALSE){dir.create(str0)}
-    
-    str1 = paste(str0, "/python", sep="")
-    if(dir.exists(str1)==FALSE){dir.create(str1)}
+    # str0 = "~/Local-Partitions/Reports"
+    # if(dir.exists(str0)==FALSE){dir.create(str0)}
+    # 
+    # str1 = paste(str0, "/python", sep="")
+    # if(dir.exists(str1)==FALSE){dir.create(str1)}
     
     cat("\n\n#########################################################")
     cat("\n# RUN LOCAL: Execute PYTHON                             #")

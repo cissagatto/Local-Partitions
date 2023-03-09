@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -48,11 +48,11 @@ FolderScripts = "~/Local-Partitions/R"
 #       configurations files                                                                     #
 ##################################################################################################
 execute.python <- function(ds, 
-                          dataset_name,
-                          number_dataset, 
-                          number_cores, 
-                          number_folds, 
-                          folderResults){
+                           dataset_name,
+                           number_dataset, 
+                           number_cores, 
+                           number_folds, 
+                           folderResults){
   
   # from fold = 1 to number_folds
   f = 1
@@ -100,6 +100,13 @@ execute.python <- function(ds,
                         dataset_name, "-Split-Ts-", f, ".csv", sep="")
     arquivo_ts = data.frame(read.csv(nome_arq_ts))
     
+    ##########################################################################
+    labels.indices = seq(ds$LabelStart, ds$LabelEnd, by=1)
+    
+    ##########################################################################
+    mldr.teste = mldr_from_dataframe(arquivo_ts, labelIndices = labels.indices)
+    
+    
     ########################################################################################
     cat("\n\tJoin validation and train")
     arquivo_tr2 = rbind(arquivo_tr, arquivo_vl)
@@ -138,43 +145,50 @@ execute.python <- function(ds,
       break
     }
     
-    # str.1 = paste("mv ", FolderScripts, "/y_pred.csv ", Folder.Tested.Split, sep="")
-    # str.2 = paste("mv ", FolderScripts, "/y_true.csv ", Folder.Tested.Split, sep="")
-    # print(system(str.1))
-    # print(system(str.2))
     
+    #####################################################
     setwd(folderSplit)
-    y_preds = data.frame(read.csv("y_pred.csv"))
+    y_probas = data.frame(read.csv("y_proba.csv"))
     y_trues = data.frame(read.csv("y_true.csv"))
+    y_preds = data.frame(read.csv("y_true.csv"))
     
-    #####################################################################
-    cat("\n\tUTIML Threshold\n")
-    utiml.threshold <- scut_threshold(y_preds, arquivo_ts)
-    final.predictions <- data.frame(as.matrix(fixed_threshold(y_preds, 
-                                                              utiml.threshold)))
-    
-    setwd(folderSplit)
-    write.csv(final.predictions, "y_predict.csv", row.names = FALSE)
-    
+    #############################
+    nomes.rotulos = colnames(y_trues)
     
     #####################################################################
     cat("\n\tSave original and pruned predictions\n")
-    pred.o = paste(colnames(y_preds), "-pred-ori", sep="")
-    names(y_preds) = pred.o
+    pred = paste(colnames(y_preds), "-pred", sep="")
+    names(y_preds) = pred
     
-    pred.c = paste(colnames(final.predictions), "-pred-cut", sep="")
-    names(final.predictions) = pred.c
+    proba = paste(colnames(y_probas), "-proba", sep="")
+    names(y_probas) = proba
     
     true.labels = paste(colnames(y_trues), "-true", sep="")
     names(y_trues) = true.labels
     
-    all.predictions = cbind(y_preds, final.predictions, y_trues)
+    all.predictions = cbind(y_probas, y_preds, y_trues)
+    
     setwd(folderSplit)
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
     
-    unlink("y_pred.csv")
     
-    #f = f + 1
+    #####################################################################
+    cat("\nPredictions")
+    # predicoes <- function(y_trues, y_preds, folder){
+    predicoes(y_trues, y_preds, folderSplit, nomes.rotulos)
+    
+    
+    #####################################################################
+    cat("\nPlot ROC curve")
+    # y_pred, y_proba, mldr.teste, folder
+    plote.curva.roc(y_pred = y_preds, 
+                    y_proba = y_probas, 
+                    teste.dataset = mldr.teste, 
+                    folder = folderSplit,
+                    nomes.rotulos = nomes.rotulos)
+    
+    
+    # f = f + 1
     gc()
   }
   
@@ -215,8 +229,9 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
     setwd(FolderScripts)
     source("utils.R")
     
-    library("mldr")
-    library("utiml")
+    ####################################################################################
+    setwd(FolderScripts)
+    source("libraries.R")
     
     ####################################################################################
     diretorios = directories(dataset_name, folderResults)
@@ -228,7 +243,7 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
     ####################################################################################
     cat("\nAbrindo pred and true")
     setwd(folderSplit)
-    y_pred = data.frame(read.csv("y_predict.csv"))
+    y_pred = data.frame(read.csv("y_pred.csv"))
     y_true = data.frame(read.csv("y_true.csv"))
     
     cat("\nConvertendo em numerico")
@@ -249,7 +264,36 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
     resConfMat = data.frame(resConfMat)
     names(resConfMat) = paste("Fold-", f, sep="")
     setwd(folderSplit)
-    write.csv(resConfMat, "ResConfMat.csv")    
+    write.csv(resConfMat, "ResConfMat.csv") 
+    
+    
+    ###############################################################
+    conf.mat = data.frame(confmat$TPl, confmat$FPl,
+                          confmat$FNl, confmat$TNl)
+    names(conf.mat) = c("TP", "FP", "FN", "TN")
+    
+    
+    # porcentagem
+    conf.mat.perc = data.frame(conf.mat/nrow(y_true))
+    names(conf.mat.perc) = c("TP.perc", "FP.perc", "FN.perc", "TN.perc")
+    
+    # calculando o total de rótulos classificados errados
+    wrong = conf.mat$FP + conf.mat$FN
+    
+    # calculando a porcentagem de rótulos classificados errados
+    wrong.perc = wrong/nrow(y_true)
+    
+    # calculando o total de rótulos classificados corretamente
+    correct = conf.mat$TP + conf.mat$TN
+    
+    # calculando a porcentagem de rótulos classificados corretamente
+    correct.perc = correct/nrow(y_true)
+    
+    conf.mat = data.frame(conf.mat, conf.mat.perc, wrong, correct, 
+                          wrong.perc, correct.perc)
+    
+    setwd(folderSplit)
+    write.csv(conf.mat, "matrix-confusion.csv")
     
     
     #f = f + 1
@@ -285,13 +329,22 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   
   # vector with names measures
   measures = c("accuracy","average-precision","clp","coverage","F1","hamming-loss","macro-AUC",
-              "macro-F1","macro-precision","macro-recall","margin-loss","micro-AUC","micro-F1",
-              "micro-precision","micro-recall","mlp","one-error","precision","ranking-loss",
-              "recall","subset-accuracy","wlp")
+               "macro-F1","macro-precision","macro-recall","margin-loss","micro-AUC","micro-F1",
+               "micro-precision","micro-recall","mlp","one-error","precision","ranking-loss",
+               "recall","subset-accuracy","wlp")
   
   # dta frame
   confMatFinal = data.frame(measures)
   folds = c("")
+  
+  final.proba.micro.auc = c(0)
+  final.proba.macro.auc = c(0)
+  final.proba.auc = c(0)
+  final.proba.ma.mi.auc = c(0)
+  
+  final.pred.micro.auc = c(0)
+  final.pred.macro.auc = c(0)
+  final.pred.auc = c(0)
   
   # from fold = 1 to number_labels
   f = 1
@@ -310,6 +363,37 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
     unlink("y_predict.csv", recursive = TRUE)
     unlink("y_true.csv", recursive = TRUE)
     
+    setwd(folderSplit)
+    
+    #################################
+    proba.auc = data.frame(read.csv("proba-auc.csv"))
+    names(proba.auc) = c("fold", "value")
+    final.proba.auc = rbind(final.proba.auc, proba.auc)
+    
+    proba.micro.auc = data.frame(read.csv("proba-micro-auc.csv"))
+    names(proba.micro.auc) = c("fold", "value")
+    final.proba.micro.auc = rbind(final.proba.micro.auc, proba.micro.auc)
+    
+    proba.macro.auc = data.frame(read.csv("proba-macro-auc.csv"))
+    names(proba.macro.auc) = c("fold", "value")
+    final.proba.macro.auc = rbind(final.proba.macro.auc, proba.macro.auc)
+    
+    proba.ma.mi.auc = data.frame(read.csv("y_proba_mami.csv"))
+    final.proba.ma.mi.auc = rbind(final.proba.ma.mi.auc, proba.ma.mi.auc)
+    
+    ##################
+    pred.auc = data.frame(read.csv("pred-auc.csv"))
+    names(pred.auc) = c("fold", "value")
+    final.pred.auc = rbind(final.pred.auc, pred.auc)
+    
+    pred.micro.auc = data.frame(read.csv("pred-micro-auc.csv"))
+    names(pred.micro.auc) = c("fold", "value")
+    final.pred.micro.auc = rbind(final.pred.micro.auc, pred.micro.auc)
+    
+    pred.macro.auc = data.frame(read.csv("pred-macro-auc.csv"))
+    names(pred.macro.auc) = c("fold", "value")
+    final.pred.macro.auc = rbind(final.pred.macro.auc, pred.macro.auc)
+    
     f = f + 1
     gc()
   } 
@@ -320,6 +404,38 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   names(confMatFinal) = c("Measures", folds)
   write.csv(confMatFinal, paste(dataset_name, "-Local-Test-Evaluated.csv", sep=""), row.names = FALSE)
   
+  fold = seq(1, number_folds, by =1)
+  
+  final.proba.auc = final.proba.auc[-1,]
+  final.proba.auc = data.frame(fold, auc = final.proba.auc$value)
+  
+  final.proba.micro.auc = final.proba.micro.auc[-1,]
+  final.proba.micro.auc = data.frame(fold, micro.auc = final.proba.micro.auc$value)
+  
+  final.proba.macro.auc = final.proba.macro.auc[-1,]
+  final.proba.macro.auc = data.frame(fold, macro.auc = final.proba.macro.auc$value)
+  
+  final.proba.ma.mi.auc = final.proba.ma.mi.auc[-1,]
+  final.proba.ma.mi.auc = data.frame(fold, final.proba.ma.mi.auc)
+  
+  setwd(diretorios$folderLocal)
+  write.csv(final.proba.auc, "proba-auc.csv", row.names = FALSE)  
+  write.csv(final.proba.macro.auc, "proba-macro-auc.csv", row.names = FALSE)  
+  write.csv(final.proba.micro.auc, "proba-micro-auc.csv", row.names = FALSE)
+  write.csv(final.proba.ma.mi.auc, "proba-ma-mi-auprc.csv", row.names = FALSE)  
+  
+  #################
+  final.pred.auc = final.pred.auc[-1,]
+  final.pred.auc = data.frame(fold, auc = final.pred.auc$value)
+  
+  final.pred.micro.auc = final.pred.micro.auc[-1,]
+  final.pred.micro.auc = data.frame(fold, micro.auc = final.pred.micro.auc$value)
+  
+  final.pred.macro.auc = final.pred.macro.auc[-1,]
+  final.pred.macro.auc = data.frame(fold, macro.auc = final.pred.macro.auc$value)
+  
+  
+  #######################
   # calculando a média dos 10 folds para cada medida
   media = data.frame(apply(confMatFinal[,-1], 1, mean))
   media = cbind(measures, media)

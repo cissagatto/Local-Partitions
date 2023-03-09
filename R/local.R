@@ -16,8 +16,8 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -87,10 +87,9 @@ args <- commandArgs(TRUE)
 # from csv file                                                               #
 ###############################################################################
 
-# config_file = "/home/biomal/Local-Partitions/config-files/clus/l-clus-GpositiveGO.csv"
-# config_file = "/home/biomal/Local-Partitions/config-files/utiml/l-utiml-GpositiveGO.csv"
-# config_file = "/home/biomal/Local-Partitions/config-files/mulan/l-mulan-GpositiveGO.csv"
-# config_file = "/home/biomal/Local-Partitions/config-files/python/l-python-GpositiveGO.csv"
+
+# config_file = "/home/biomal/Local-Partitions/config-files/rf/lrf-GpositiveGO.csv"
+
 
 config_file <- args[1]
 
@@ -133,18 +132,6 @@ number_cores = as.numeric(config$Value[7])
 ds = datasets[number_dataset,]
 
 
-# cat("\n################################################################\n")
-# print(ds)
-# cat("\n# DATASET PATH: \t", dataset_path)
-# cat("\n# TEMPORARY PATH: \t", folderResults)
-# cat("\n# PACKAGE: \t", package)
-# cat("\n# DATASET NAME:  \t", dataset_name)
-# cat("\n# NUMBER DATASET: \t", number_dataset)
-# cat("\n# NUMBER X-FOLDS CROSS-VALIDATION: \t", number_folds)
-# cat("\n# NUMBER CORES: \t", number_cores)
-# cat("\n################################################################\n\n")
-
-
 ###############################################################################
 # Creating temporary processing folder                                        #
 ###############################################################################
@@ -158,8 +145,7 @@ cat("\n#############################")
 cat("\n# RSCRIPIT: Get directories #")
 cat("\n#############################\n")
 diretorios <- directories(dataset_name, folderResults)
-# print(diretorios)
-# cat("\n\n")
+
 
 
 ###############################################################################
