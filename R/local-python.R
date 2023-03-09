@@ -111,6 +111,7 @@ execute.python <- function(ds,
     cat("\n\tJoin validation and train")
     arquivo_tr2 = rbind(arquivo_tr, arquivo_vl)
     
+    
     ########################################################################################
     cat("\n\tSaving Y True")
     y_true = arquivo_ts[,ds$LabelStart:ds$LabelEnd]
@@ -146,46 +147,48 @@ execute.python <- function(ds,
     }
     
     
-    #####################################################
+    ###################
     setwd(folderSplit)
-    y_probas = data.frame(read.csv("y_proba.csv"))
+    y_preds = data.frame(read.csv("y_pred.csv"))
     y_trues = data.frame(read.csv("y_true.csv"))
-    y_preds = data.frame(read.csv("y_true.csv"))
+    y_probas = data.frame(read.csv("y_proba.csv"))     
     
-    #############################
+    
+    #####################################################################
     nomes.rotulos = colnames(y_trues)
-    
-    #####################################################################
-    cat("\n\tSave original and pruned predictions\n")
-    pred = paste(colnames(y_preds), "-pred", sep="")
-    names(y_preds) = pred
-    
-    proba = paste(colnames(y_probas), "-proba", sep="")
-    names(y_probas) = proba
-    
-    true.labels = paste(colnames(y_trues), "-true", sep="")
-    names(y_trues) = true.labels
-    
-    all.predictions = cbind(y_probas, y_preds, y_trues)
-    
-    setwd(folderSplit)
-    write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
-    
-    
-    #####################################################################
-    cat("\nPredictions")
-    # predicoes <- function(y_trues, y_preds, folder){
-    predicoes(y_trues, y_preds, folderSplit, nomes.rotulos)
+    names(y_probas) = nomes.rotulos
     
     
     #####################################################################
     cat("\nPlot ROC curve")
-    # y_pred, y_proba, mldr.teste, folder
-    plote.curva.roc(y_pred = y_preds, 
-                    y_proba = y_probas, 
-                    teste.dataset = mldr.teste, 
-                    folder = folderSplit,
-                    nomes.rotulos = nomes.rotulos)
+    roc.curva(predictions = y_preds,
+              probabilities = y_probas,
+              test = mldr.teste,
+              Folder = folderSplit)
+    
+    ##############################################
+    cat("\nInformações das predições")
+    predictions.information(nomes.rotulos=nomes.rotulos, 
+                            proba = y_probas, 
+                            preds = y_preds, 
+                            trues = y_trues, 
+                            folder = folderSplit)
+    
+    #####################################################################
+    cat("\nSave original and pruned predictions")
+    pred.o = paste(colnames(y_preds), "-pred", sep="")
+    names(y_preds) = pred.o
+    
+    true.labels = paste(colnames(y_trues), "-true", sep="")
+    names(y_trues) = true.labels
+    
+    proba = paste(colnames(y_probas), "-proba", sep="")
+    names(y_probas) = proba
+    
+    all.predictions = cbind(y_preds, y_trues, y_probas)
+    
+    setwd(folderSplit)
+    write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
     
     
     # f = f + 1
