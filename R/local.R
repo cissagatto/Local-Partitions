@@ -284,7 +284,7 @@ if(package=="clus"){
   }
   
   
-} else if(package=="python"){
+} else if(package=="rf"){
   
   cat("\n\n################################################################")
   cat("\n# RSCRIPT: COPY TO GOOGLE DRIVE                                #")
