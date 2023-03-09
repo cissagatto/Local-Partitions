@@ -100,7 +100,7 @@ while(j<=length(Implementation.1)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-    write("Dataset_Path, /home/biomal/Datasets/", 
+    write("Dataset_Path, /home/elaine/Datasets/", 
          file = output.file, append = TRUE)
     
     # job name
