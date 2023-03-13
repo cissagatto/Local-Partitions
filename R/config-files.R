@@ -100,8 +100,11 @@ while(j<=length(Implementation.1)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-    write("Dataset_Path, /home/elaine/Datasets/", 
-         file = output.file, append = TRUE)
+    # write("Dataset_Path, /Datasets/", 
+    #     file = output.file, append = TRUE)
+    
+     write("Dataset_Path, /home/elaine/Datasets/", 
+          file = output.file, append = TRUE)
     
     # job name
     job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
