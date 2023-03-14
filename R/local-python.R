@@ -185,7 +185,7 @@ execute.python <- function(ds,
     proba = paste(colnames(y_probas), "-proba", sep="")
     names(y_probas) = proba
     
-    all.predictions = cbind(y_preds, y_trues, y_probas)
+    all.predictions = cbind(y_probas, y_preds, y_trues)
     
     setwd(folderSplit)
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)

@@ -53,7 +53,7 @@ n = nrow(datasets)
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-FolderCF = paste(FolderRoot, "/config-files", sep="")
+FolderCF = paste(FolderRoot, "/config-files-2", sep="")
 if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 
 
@@ -103,13 +103,18 @@ while(j<=length(Implementation.1)){
     # write("Dataset_Path, /Datasets/", 
     #     file = output.file, append = TRUE)
     
-     write("Dataset_Path, /home/elaine/Datasets/", 
+    write("Dataset_Path, /home/elaine/Datasets/", 
           file = output.file, append = TRUE)
+    
+    # write("Dataset_Path, /home/biomal/Datasets/", 
+    #      file = output.file, append = TRUE)
     
     # job name
     job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
     
     # directory name
+    # folder_name = paste("/scratch/", job_name, sep = "")
+    # folder_name = paste("/tmp/", job_name, sep = "")
     folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
