@@ -263,7 +263,6 @@ executeLP <- function(ds,
     
   } else {
     
-    
     setwd(FolderScripts)
     source("local-python.R")
     

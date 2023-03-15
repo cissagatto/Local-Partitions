@@ -130,7 +130,7 @@ execute.python <- function(ds,
     # /home/biomal/Local-Partitions/Utils/br-python
     str.execute = paste("python3 ", 
                         diretorios$folderUtils,
-                        "/main.py ", 
+                        "/random-forests.py ", 
                         nome_arq_tr, " ",
                         nome_arq_vl,  " ",
                         nome_arq_ts, " ", 
@@ -191,7 +191,7 @@ execute.python <- function(ds,
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
     
     
-    # f = f + 1
+    #f = f + 1
     gc()
   }
   

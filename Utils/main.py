@@ -42,12 +42,12 @@ if __name__ == '__main__':
     end = int(sys.argv[5])
     diretorio = sys.argv[6]
     
-    # train = pd.read_csv("/dev/shm/lrf-GpositiveGO/Dataset/GpositiveGO/CrossValidation/Tr/GpositiveGO-Split-Tr-1.csv")
-    # valid = pd.read_csv("/dev/shm/lrf-GpositiveGO/Dataset/GpositiveGO/CrossValidation/Vl/GpositiveGO-Split-Vl-1.csv")
-    # test = pd.read_csv("/dev/shm/lrf-GpositiveGO/Dataset/GpositiveGO/CrossValidation/Ts/GpositiveGO-Split-Ts-1.csv")
-    # start = 912
-    # end = 916
-    # diretorio = "/dev/shm/lrf-GpositiveGO/Local/Split-1"
+    # train = pd.read_csv("/dev/shm/lrf-medical/Dataset/medical/CrossValidation/Tr/medical-Split-Tr-2.csv")
+    # valid = pd.read_csv("/dev/shm/lrf-medical/Dataset/medical/CrossValidation/Vl/medical-Split-Vl-2.csv")
+    # test = pd.read_csv("/dev/shm/lrf-medical/Dataset/medical/CrossValidation/Ts/medical-Split-Ts-2.csv")
+    # start = 1449
+    # end = 1494
+    # diretorio = "/dev/shm/lrf-medical/Local/Split-2"
     
     train = pd.concat([train,valid],axis=0).reset_index(drop=True)
     
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     classifier = BinaryRelevance(baseModel)
     classifier.fit(X_train, Y_train)
     test_predictions = classifier.predict(X_test)
-    probabilities = classifier.predict_proba(X_test)    
+    probabilities = classifier.predict_proba(X_test)
     
     true = (diretorio + "/y_true.csv")
     pred = (diretorio + "/y_pred.csv")
