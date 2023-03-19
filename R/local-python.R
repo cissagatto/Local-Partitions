@@ -151,7 +151,7 @@ execute.python <- function(ds,
     setwd(folderSplit)
     y_preds = data.frame(read.csv("y_pred.csv"))
     y_trues = data.frame(read.csv("y_true.csv"))
-    y_probas = data.frame(read.csv("y_proba.csv"))     
+    y_probas = data.frame(read.csv("y_proba_1.csv"))     
     
     
     #####################################################################
@@ -191,7 +191,7 @@ execute.python <- function(ds,
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
     
     
-    #f = f + 1
+    # f = f + 1
     gc()
   }
   
