@@ -160,8 +160,17 @@ execute.python <- function(ds,
     
     
     #####################################################################
+    cat("\n\tUTIML Threshold\n")
+    y_preds_2 <- data.frame(as.matrix(fixed_threshold(y_probas, 
+                                                    threshold = 0.5)))
+    
+    setwd(FolderSplit)
+    write.csv(y_preds_2, "y_predict.csv", row.names = FALSE)
+    
+    
+    #####################################################################
     cat("\nPlot ROC curve")
-    roc.curva(predictions = y_preds,
+    roc.curva(predictions = y_preds_2,
               probabilities = y_probas,
               test = mldr.teste,
               Folder = folderSplit)
@@ -170,14 +179,14 @@ execute.python <- function(ds,
     cat("\nInformações das predições")
     predictions.information(nomes.rotulos=nomes.rotulos, 
                             proba = y_probas, 
-                            preds = y_preds, 
+                            preds = y_preds_2, 
                             trues = y_trues, 
                             folder = folderSplit)
     
     #####################################################################
     cat("\nSave original and pruned predictions")
-    pred.o = paste(colnames(y_preds), "-pred", sep="")
-    names(y_preds) = pred.o
+    pred.o = paste(colnames(y_preds_2), "-pred", sep="")
+    names(y_preds_2) = pred.o
     
     true.labels = paste(colnames(y_trues), "-true", sep="")
     names(y_trues) = true.labels
@@ -246,7 +255,7 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
     ####################################################################################
     cat("\nAbrindo pred and true")
     setwd(folderSplit)
-    y_pred = data.frame(read.csv("y_pred.csv"))
+    y_pred = data.frame(read.csv("y_predict.csv"))
     y_true = data.frame(read.csv("y_true.csv"))
     
     cat("\nConvertendo em numerico")
@@ -385,15 +394,15 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
     final.proba.ma.mi.auc = rbind(final.proba.ma.mi.auc, proba.ma.mi.auc)
     
     ##################
-    pred.auc = data.frame(read.csv("pred-auc.csv"))
+    pred.auc = data.frame(read.csv("bin-auc.csv"))
     names(pred.auc) = c("fold", "value")
     final.pred.auc = rbind(final.pred.auc, pred.auc)
     
-    pred.micro.auc = data.frame(read.csv("pred-micro-auc.csv"))
+    pred.micro.auc = data.frame(read.csv("bin-micro-auc.csv"))
     names(pred.micro.auc) = c("fold", "value")
     final.pred.micro.auc = rbind(final.pred.micro.auc, pred.micro.auc)
     
-    pred.macro.auc = data.frame(read.csv("pred-macro-auc.csv"))
+    pred.macro.auc = data.frame(read.csv("bin-macro-auc.csv"))
     names(pred.macro.auc) = c("fold", "value")
     final.pred.macro.auc = rbind(final.pred.macro.auc, pred.macro.auc)
     
@@ -438,9 +447,9 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   final.pred.macro.auc = data.frame(fold, macro.auc = final.pred.macro.auc$value)
   
   setwd(diretorios$folderLocal)
-  write.csv(final.pred.auc, "pred-auc.csv", row.names = FALSE)  
-  write.csv(final.pred.macro.auc, "pred-macro-auc.csv", row.names = FALSE)  
-  write.csv(final.pred.micro.auc, "pred-micro-auc.csv", row.names = FALSE)
+  write.csv(final.pred.auc, "bin-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.macro.auc, "bin-macro-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.micro.auc, "bin-micro-auc.csv", row.names = FALSE)
   
   
   #######################

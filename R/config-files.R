@@ -53,7 +53,7 @@ n = nrow(datasets)
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-FolderCF = paste(FolderRoot, "/config-files-ufscar", sep="")
+FolderCF = paste(FolderRoot, "/config-files-biomal", sep="")
 if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 
 
@@ -100,11 +100,11 @@ while(j<=length(Implementation.1)){
     
     # Absolute path to the folder where the dataset's "tar.gz" is stored
     
-     write("Dataset_Path, /Datasets/", 
-         file = output.file, append = TRUE)
+    # write("Dataset_Path, /Datasets/", 
+    #     file = output.file, append = TRUE)
     
-    # write("Dataset_Path, /home/elaine/Datasets/", 
-    #      file = output.file, append = TRUE)
+     write("Dataset_Path, /home/elaine/Datasets/", 
+          file = output.file, append = TRUE)
     
     # write("Dataset_Path, /home/biomal/Datasets/", 
     #      file = output.file, append = TRUE)
@@ -114,8 +114,8 @@ while(j<=length(Implementation.1)){
     
     # directory name
     # folder_name = paste("/scratch/", job_name, sep = "")
-    folder_name = paste("/tmp/", job_name, sep = "")
-    # folder_name = paste("/dev/shm/", job_name, sep = "")
+    # folder_name = paste("/tmp/", job_name, sep = "")
+    folder_name = paste("/dev/shm/", job_name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
