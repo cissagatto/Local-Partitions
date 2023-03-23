@@ -164,7 +164,7 @@ execute.python <- function(ds,
     y_preds_2 <- data.frame(as.matrix(fixed_threshold(y_probas, 
                                                     threshold = 0.5)))
     
-    setwd(FolderSplit)
+    setwd(folderSplit)
     write.csv(y_preds_2, "y_predict.csv", row.names = FALSE)
     
     
