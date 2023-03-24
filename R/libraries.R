@@ -42,7 +42,7 @@ library("utiml", quietly = TRUE)
 library("mldr", quietly = TRUE) 
 library("foreach", quietly = TRUE) 
 library("doParallel", quietly = TRUE) 
-
+library(tidyverse)
 
 ##################################################################################################
 # Please, any errors, contact us: elainececiliagatto@gmail.com                                   #

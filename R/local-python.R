@@ -106,6 +106,9 @@ execute.python <- function(ds,
     ##########################################################################
     mldr.teste = mldr_from_dataframe(arquivo_ts, labelIndices = labels.indices)
     
+    ##########################################################################
+    nomes.rotulos = colnames(arquivo_vl[,ds$LabelStart:ds$LabelEnd])
+    
     
     ########################################################################################
     cat("\n\tJoin validation and train")
@@ -127,7 +130,7 @@ execute.python <- function(ds,
     
     ##################################################################
     # EXECUTE ECC PYTHON
-    # /home/biomal/Local-Partitions/Utils/br-python
+    # /home/biomal~/Local-Partitions/Utils/br-python
     str.execute = paste("python3 ", 
                         diretorios$folderUtils,
                         "/random-forests-2.py ", 
@@ -151,18 +154,28 @@ execute.python <- function(ds,
     setwd(folderSplit)
     y_preds = data.frame(read.csv("y_pred.csv"))
     y_trues = data.frame(read.csv("y_true.csv"))
-    y_probas = data.frame(read.csv("y_proba_1.csv"))     
-    
+    y_probas = data.frame(read.csv("y_proba.csv"))     
     
     #####################################################################
-    nomes.rotulos = colnames(y_trues)
-    names(y_probas) = nomes.rotulos
+    nomes = colnames(y_probas)
+    
+    nomes.2 = c("")
+    m = ncol(y_probas)/2
+    a = 1
+    while(a<=m){
+      nomes.2[a] = paste("prob_", a-1, "_1", sep="")
+      a = a + 1
+    }
+    
+    probabilidades = y_probas %>% select(all_of(nomes.2))
+    names(probabilidades) = colnames(y_trues)
+    write.csv(probabilidades, "y_proba_1.csv", row.names = FALSE)
     
     
     #####################################################################
     cat("\n\tUTIML Threshold\n")
-    y_preds_2 <- data.frame(as.matrix(fixed_threshold(y_probas, 
-                                                    threshold = 0.5)))
+    y_preds_2 <- data.frame(as.matrix(fixed_threshold(probabilidades, 
+                                                      threshold = 0.5)))
     
     setwd(folderSplit)
     write.csv(y_preds_2, "y_predict.csv", row.names = FALSE)
@@ -171,30 +184,31 @@ execute.python <- function(ds,
     #####################################################################
     cat("\nPlot ROC curve")
     roc.curva(predictions = y_preds_2,
-              probabilities = y_probas,
+              probabilities = probabilidades,
               test = mldr.teste,
               Folder = folderSplit)
+    
     
     ##############################################
     cat("\nInformações das predições")
     predictions.information(nomes.rotulos=nomes.rotulos, 
-                            proba = y_probas, 
+                            proba = probabilidades, 
                             preds = y_preds_2, 
                             trues = y_trues, 
                             folder = folderSplit)
     
     #####################################################################
     cat("\nSave original and pruned predictions")
-    pred.o = paste(colnames(y_preds_2), "-pred", sep="")
+    pred.o = paste(names.labels, "-pred", sep="")
     names(y_preds_2) = pred.o
     
-    true.labels = paste(colnames(y_trues), "-true", sep="")
+    true.labels = paste(names.labels, "-true", sep="")
     names(y_trues) = true.labels
     
-    proba = paste(colnames(y_probas), "-proba", sep="")
-    names(y_probas) = proba
+    proba = paste(names.labels, "-proba", sep="")
+    names(probabilidades) = proba
     
-    all.predictions = cbind(y_probas, y_preds, y_trues)
+    all.predictions = cbind(probabilidades, y_preds_2, y_trues)
     
     setwd(folderSplit)
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
@@ -370,10 +384,7 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
     confMat = data.frame(read.csv(paste(folderSplit, "/ResConfMat.csv", sep="")))
     names(confMat) = c("Measures", "Fold")
     confMatFinal = cbind(confMatFinal, confMat$Fold) 
-    folds[f] = paste("Fold-", f, sep="")
-    setwd(folderSplit)
-    unlink("y_predict.csv", recursive = TRUE)
-    unlink("y_true.csv", recursive = TRUE)
+    folds[f] = paste("Fold-", f, sep="")        
     
     setwd(folderSplit)
     
