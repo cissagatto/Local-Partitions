@@ -1,7 +1,7 @@
-rm(list=ls())
+rm(list = ls())
 
 ##############################################################################
-# LOCAL PARTITIONS                                                           #
+# STANDARD HPML                                                              #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -28,132 +28,179 @@ rm(list=ls())
 ##############################################################################
 
 
+##################################################
+# SET WORK SPACE
+##################################################
+FolderRoot = "~/Standard-HPML"
+FolderScripts = "~/Standard-HPML/R"
 
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
-FolderRoot = "~/Local-Partitions"
-FolderScripts = "~/Local-Partitions/R"
 
 
-###############################################################################
-# LOAD LIBRARY/Implementation                                                        #
-###############################################################################
+##################################################
+# PACKAGES
+##################################################
 library(stringr)
 
 
-###############################################################################
-# READING DATASET INFORMATION FROM DATASETS-ORIGINAL.CSV                      #
-###############################################################################
+##################################################
+# DATASETS INFORMATION
+##################################################
 setwd(FolderRoot)
 datasets = data.frame(read.csv("datasets-original.csv"))
 n = nrow(datasets)
 
 
-###############################################################################
-# CREATING FOLDER TO SAVE CONFIG FILES                                        #
-###############################################################################
-FolderCF = paste(FolderRoot, "/config-files-biomal", sep="")
-if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
-
-
-###############################################################################
-# CREATING FOLDER TO SAVE CONFIG FILES                                        #
-###############################################################################
+##################################################
+# WHICH IMPLEMENTATION WILL BE USED?
+##################################################
 Implementation.1 = c("rf")
 Implementation.2 = c("rf")
 
 
-j = 1
-while(j<=length(Implementation.1)){
-  
-  ###############################################################################
-  # CREATING FOLDER TO SAVE CONFIG FILES                                        #
-  ###############################################################################
-  FolderClassifier = paste(FolderCF, "/", Implementation.1[j], sep="")
-  if(dir.exists(FolderClassifier)==FALSE){dir.create(FolderClassifier)}
+######################################################
+# SIMILARITY MEASURE USED TO MODEL LABEL CORRELATIONS
+######################################################
+Similarity.1 = c("jaccard")
+Similarity.2 = c("j")
 
+
+##################################################
+# LINKAGE METRIC USED TO BUILT THE DENDROGRAM
+##################################################
+Dendrogram.1 = c("ward.D2")
+Dendrogram.2 = c("w")
+
+
+######################################################
+# CRITERIA USED TO CHOOSE THE BEST HYBRID PARTITION
+######################################################
+Criteria.1 = c("silho")
+Criteria.2 = c("s")
+
+
+######################################################
+FolderCF = paste(FolderRoot, "/config-files-ufscar", sep="")
+if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
+
+# IMPLEMENTAÇÃO
+p = 1
+while(p<=length(Implementation.1)){
   
-  cat("\n\n==================================")
-  cat("\n Classificador:", Implementation.1[j])
-  cat("\n==================================\n\n")
+  FolderImplementation = paste(FolderCF, "/", Implementation.1[p], sep="")
+  if(dir.exists(FolderImplementation)==FALSE){dir.create(FolderImplementation)}
   
-  i = 1
-  while(i<=n){
+  # SIMILARIDADE
+  s = 1
+  while(s<=length(Similarity.1)){
     
-    # specific dataset
-    ds = datasets[i,]
+    FolderSimilarity = paste(FolderImplementation, "/", Similarity.1[s], sep="")
+    if(dir.exists(FolderSimilarity)==FALSE){dir.create(FolderSimilarity)}
     
-    # print the dataset name
-    cat("\n\tdataset = ", ds$Name)
+    # DENDROGRAMA
+    f = 1
+    while(f<=length(Dendrogram.1)){
+      
+      FolderDendro = paste(FolderSimilarity, "/", Dendrogram.1[f], sep="")
+      if(dir.exists(FolderDendro)==FALSE){dir.create(FolderDendro)}
+      
+      # CRITERIA
+      w = 1
+      while(w<=length(Criteria.1)){
+        
+        FolderCriteria = paste(FolderDendro, "/", Criteria.1[w], sep="")
+        if(dir.exists(FolderCriteria)==FALSE){dir.create(FolderCriteria)}
+        
+        # DATASET
+        d = 1
+        while(d<=nrow(datasets)){
+          
+          ds = datasets[d,]
+          
+          cat("\n\n=======================================")
+          cat("\n", Implementation.1[p])
+          cat("\n\t", Similarity.1[s])
+          cat("\n\t", Dendrogram.1[f])
+          cat("\n\t", Criteria.1[w])
+          cat("\n\t", ds$Name)
+          
+          name = paste("stand-", ds$Name, sep="")  
+          
+          file.name = paste(FolderCriteria, "/", name, ".csv", sep="")
+          
+          output.file <- file(file.name, "wb")
+          
+          write("Config, Value",
+                file = output.file, append = TRUE)
+          
+           write("Dataset_Path, /Datasets", 
+              file = output.file, append = TRUE)
+          
+          # write("Dataset_Path, /home/elaine/Datasets", 
+          #      file = output.file, append = TRUE)
+          
+          # write("Dataset_Path, /home/biomal/Datasets", 
+          #      file = output.file, append = TRUE)
+          
+          # folder.name = paste("/scratch/", name, sep = "")
+          # folder.name = paste("/dev/shm/", name, sep = "")
+           folder.name = paste("/tmp/", name, sep = "")
+          
+          str1 = paste("Temporary_Path, ", folder.name, sep="")
+          write(str1,file = output.file, append = TRUE)
+          
+          str.1 = paste("/2-Best-Partitions/HPML.A/", 
+                        Similarity.1[s], "/",
+                        Dendrogram.1[f], "/", 
+                        Criteria.1[w],
+                        sep="")
+          str.2 = paste("Partitions_Path, ", str.1,  sep="")
+          write(str.2, file = output.file, append = TRUE)
+          
+          str0 = paste("Implementation, ", Implementation.1[p], sep="")
+          write(str0, file = output.file, append = TRUE)
+          
+          str3 = paste("Similarity, ", Similarity.1[s], sep="")
+          write(str3, file = output.file, append = TRUE)
+          
+          str3 = paste("Dendrogram, ", Dendrogram.1[f], sep="")
+          write(str3, file = output.file, append = TRUE)
+          
+          str2 = paste("Criteria, ", Criteria.1[w], sep="")
+          write(str2, file = output.file, append = TRUE)
+          
+          str3 = paste("Dataset_Name, ", ds$Name, sep="")
+          write(str3, file = output.file, append = TRUE)
+          
+          str4 = paste("Number_Dataset, ", ds$Id, sep="")
+          write(str4, file = output.file, append = TRUE)
+          
+          write("Number_Folds, 10", file = output.file, append = TRUE)
+          
+          write("Number_Cores, 10", file = output.file, append = TRUE)
+          
+          close(output.file)
+          
+          d = d + 1
+          gc()
+        } # FIM DO DATASET
+        
+        w = w + 1
+        gc()
+      } # FIM DO CRITERIO
+      
+      f = f + 1
+      gc()
+      
+    } # FIM DO DENDROGRAMA
     
-    # Confi File Name
-    file_name = paste(FolderClassifier, "/l", Implementation.2[j], "-", 
-                      ds$Name, ".csv", sep="")
-    
-    # Starts building the configuration file
-    output.file <- file(file_name, "wb")
-    
-    # Config file table header
-    write("Config, Value",
-          file = output.file, append = TRUE)
-    
-    # Absolute path to the folder where the dataset's "tar.gz" is stored
-    
-    # write("Dataset_Path, /Datasets/", 
-    #     file = output.file, append = TRUE)
-    
-     write("Dataset_Path, /home/elaine/Datasets/", 
-          file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, /home/biomal/Datasets/", 
-    #      file = output.file, append = TRUE)
-    
-    # job name
-    job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
-    
-    # directory name
-    # folder_name = paste("/scratch/", job_name, sep = "")
-    # folder_name = paste("/tmp/", job_name, sep = "")
-    folder_name = paste("/dev/shm/", job_name, sep = "")
-    
-    # Absolute path to the folder where temporary processing will be done. 
-    # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
-    # cluster model where your experiment will be run.
-    str.0 = paste("Temporary_Path, ", folder_name, sep="")
-    write(str.0,file = output.file, append = TRUE)
-    
-    
-    str.1 = paste("Implementation, ", Implementation.1[j], sep="")
-    write(str.1, file = output.file, append = TRUE)
-    
-    # dataset name
-    str.2 = paste("Dataset_name, ", ds$Name, sep="")
-    write(str.2, file = output.file, append = TRUE)
-    
-    # Dataset number according to "datasets-original.csv" file
-    str.3 = paste("Number_dataset, ", ds$Id, sep="")
-    write(str.3, file = output.file, append = TRUE)
-    
-    # Number used for X-Fold Cross-Validation
-    write("Number_folds, 10", file = output.file, append = TRUE)
-    
-    # Number of cores to use for parallel processing
-    write("Number_cores, 10", file = output.file, append = TRUE)
-    
-    # finish writing to the configuration file
-    close(output.file)
-    
-    # increment
-    i = i + 1
-    
-    # clean
+    s = s + 1
     gc()
-  }
+  } # FIM DA SIMILARIDADE
   
-  j = j + 1
+  p = p + 1
   gc()
-}
+} # FIM DA IMPLEMENTAÇÃO
+
 
 
 ###############################################################################

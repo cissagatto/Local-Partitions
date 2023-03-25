@@ -1,7 +1,7 @@
-rm(list=ls())
+rm(list = ls())
 
 ##############################################################################
-# GLOBAL PARTITIONS                                                          #
+# STANDARD HPML                                                              #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -12,7 +12,7 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
 # Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
@@ -27,334 +27,356 @@ rm(list=ls())
 #                                                                            #
 ##############################################################################
 
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
-FolderRoot = "~/Local-Partitions"
-FolderScripts = "~/Local-Partitions/R"
+
+##################################################
+# SET WORK SPACE
+##################################################
+FolderRoot = "~/Standard-HPML"
+FolderScripts = "~/Standard-HPML/R"
 
 
-###############################################################################
-# LOAD LIBRARY/PACKAGE                                                        #
-###############################################################################
+##################################################
+# PACKAGES
+##################################################
 library(stringr)
 
 
-###############################################################################
-# READING DATASET INFORMATION FROM DATASETS-ORIGINAL.CSV                      #
-###############################################################################
+##################################################
+# DATASETS INFORMATION
+##################################################
+setwd(FolderRoot)
 datasets = data.frame(read.csv("datasets-original.csv"))
 n = nrow(datasets)
 
 
-###############################################################################
-# CREATING FOLDER TO SAVE CONFIG FILES                                        #
-###############################################################################
-FolderJob = paste(FolderRoot, "/jobs", sep = "")
-if (dir.exists(FolderJob) == FALSE) {dir.create(FolderJob)}
-
-FolderCF = "/Local-Partitions/config-files-ufscar"
+##################################################
+# WHICH IMPLEMENTATION WILL BE USED?
+##################################################
+Implementation.1 = c("rf")
+Implementation.2 = c("rf")
 
 
-###############################################################################
-# QUAL PACOTE USAR
-###############################################################################
-pacote = c("rf")
+######################################################
+# SIMILARITY MEASURE USED TO MODEL LABEL CORRELATIONS
+######################################################
+Similarity.1 = c("jaccard")
+Similarity.2 = c("j")
 
 
-###############################################################################
-# CREATING CONFIG FILES FOR EACH DATASET                                      #
-###############################################################################
-w = 1
-while(w<=length(pacote)){
+##################################################
+# LINKAGE METRIC USED TO BUILT THE DENDROGRAM
+##################################################
+Dendrogram.1 = c("ward.D2")
+Dendrogram.2 = c("w")
+
+
+######################################################
+# CRITERIA USED TO CHOOSE THE BEST HYBRID PARTITION
+######################################################
+Criteria.1 = c("silho")
+Criteria.2 = c("s")
+
+
+######################################################
+FolderJobs = paste(FolderRoot, "/jobs", sep="")
+if(dir.exists(FolderJobs)==FALSE){dir.create(FolderJobs)}
+
+FolderCF = "Standard-HPML/config-files-ufscar"
+
+
+# IMPLEMENTAÇÃO
+p = 1
+while(p<=length(Implementation.1)){
   
-  FolderPa = paste(FolderJob, "/", pacote[w], sep="")
-  if(dir.exists(FolderPa)==FALSE){dir.create(FolderPa)}
+  FolderImplementation = paste(FolderJobs, "/", Implementation.1[p], sep="")
+  if(dir.exists(FolderImplementation)==FALSE){dir.create(FolderImplementation)}
   
-  FolderCa = paste(FolderCF, "/", pacote[w], sep="")
+  FolderI = paste(FolderCF, "/", Implementation.1[p], sep="")
   
-  cat("\n================================================")
-  cat("\nPackage: \t", pacote[w])
-  
-  a = 1
-  i = 1
-  while (i <= n) {
-    
-    # select the specific dataset
-    dataset = datasets[i, ]
-    
-    # print dataset name
-    cat("\n\t", dataset$Name)
-    
-    # name 
-    name = paste("l", pacote[w], "-", dataset$Name, sep="")
-    
-    # directory name - "/scratch/eg-3s-bbc1000"
-    temp.name = paste("/tmp/", name, sep = "")
-    
-    # Confi File Name - "eg-3s-bbc1000.csv"
-    config.file.name = paste(FolderCa, "/", name, ".csv", sep="")
-    
-    # sh file name - "~/Global-Partitions/jobs/utiml/eg-3s-bbc1000.sh
-    sh.name = paste(FolderPa, "/", name, ".sh", sep = "")
-    
-    # start writing
-    output.file <- file(sh.name, "wb")
-    
-    # bash parameters
-    write("#!/bin/bash", file = output.file)
-    
-    str.1 = paste("#SBATCH -J ", name, sep = "")
-    write(str.1, file = output.file, append = TRUE)
-    
-    write("#SBATCH -o %j.out", file = output.file, append = TRUE)
-    
-    # number of processors
-    write("#SBATCH -n 1", file = output.file, append = TRUE)
-    
-    # number of cores
-    write("#SBATCH -c 10", file = output.file, append = TRUE)
-    
-    # uncomment this line if you are using slow partition
-    # write("#SBATCH --partition slow", file = output.file, append = TRUE)
-    
-    # uncomment this line if you are using slow partition
-    # write("#SBATCH -t 720:00:00", file = output.file, append = TRUE)
-    
-    # comment this line if you are using slow partition
-    write("#SBATCH -t 128:00:00", file = output.file, append = TRUE)
-    
-    # uncomment this line if you need to use all node memory
-    # write("#SBATCH --mem=0", file = output.file, append = TRUE)
-    
-    # amount of node memory you want to use
-    # comment this line if you are using -mem=0
-    write("#SBATCH --mem-per-cpu=30GB", file = output.file, append = TRUE)
-    # write("#SBATCH -mem=0", file = output.file, append = TRUE)
-    
-    # email to receive notification
-    write("#SBATCH --mail-user=elainegatto@estudante.ufscar.br",
-          file = output.file, append = TRUE)
-    
-    # type of notification
-    write("#SBATCH --mail-type=ALL", file = output.file, append = TRUE)
-    write("", file = output.file, append = TRUE)
-    
-    # FUNCTION TO CLEAN THE JOB
-    str.2 = paste("local_job=",  "\"", temp.name, "\"", sep = "")
-    write(str.2, file = output.file, append = TRUE)
-    write("function clean_job(){", file = output.file, append = TRUE)
-    str.3 = paste(" echo", "\"CLEANING ENVIRONMENT...\"", sep = " ")
-    write(str.3, file = output.file, append = TRUE)
-    str.4 = paste(" rm -rf ", "\"${local_job}\"", sep = "")
-    write(str.4, file = output.file, append = TRUE)
-    write("}", file = output.file, append = TRUE)
-    write("trap clean_job EXIT HUP INT TERM ERR", 
-          file = output.file, append = TRUE)
-    write("", file = output.file, append = TRUE)
-    
-    
-    # MANDATORY PARAMETERS
-    write("set -eE", file = output.file, append = TRUE)
-    write("umask 077", file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo =============================================================", 
-          file = output.file, append = TRUE)
-    str.5 = paste("echo SBATCH: RUNNING LOCAL PARTITIONS FOR ",
-                  name, sep="")
-    write(str.5, file = output.file, append = TRUE)
-    write("echo =============================================================", 
-          file = output.file, append = TRUE)
-    
-    
-    # write("", file = output.file, append = TRUE)
-    # write("echo COPYING CONDA ENVIRONMENT", file = output.file, append = TRUE)
-    # str.8 = paste("cp /home/u704616/miniconda3.tar.gz ", folder_name, sep ="")
-    # write(str.8 , file = output.file, append = TRUE)
-    
-    
-    # write(" ", file = output.file, append = TRUE)
-    # write("echo UNPACKING MINICONDA", file = output.file, append = TRUE)
-    # str.9 = paste("tar xzf ", folder_name, "/miniconda3.tar.gz -C ", 
-    #               folder_name, sep = "")
-    # write(str.9 , file = output.file, append = TRUE)
-    
-    
-    # write(" ", file = output.file, append = TRUE)
-    # write("echo DELETING MINICONDA TAR.GZ", file = output.file, append = TRUE)
-    # str.10 = paste("rm -rf ", folder_name, "/miniconda3.tar.gz", sep = "")
-    # write(str.10, file = output.file, append = TRUE)
-    
-    
-    # write(" ", file = output.file, append = TRUE)
-    # write("echo SOURCE", file = output.file, append = TRUE)
-    # str.11 = paste("source ", folder_name,
-    #               "/miniconda3/etc/profile.d/conda.sh ", sep = "")
-    # write(str.11, file = output.file, append = TRUE)
-    
-    
-    # write(" ", file = output.file, append = TRUE)
-    # write("echo ACTIVATING MINICONDA ", file = output.file, append = TRUE)
-    # write("conda activate AmbienteTeste", file = output.file, append = TRUE)
-    # write(" ", file = output.file, append = TRUE)
-    
-    
-    # write("echo RUNNING", file = output.file, append = TRUE)
-    # str.12 = paste("Rscript /home/u704616/Global-ECC/R/global.R ", 
-    #              config_name, sep = "")
-    # write(str.12, file = output.file, append = TRUE)
-    # write(" ", file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo DELETING FOLDER", file = output.file, append = TRUE)
-    str.6 = paste("rm -rf ", temp.name, sep = "")
-    write(str.6, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CREATING FOLDER", file = output.file, append = TRUE)
-    str.7 = paste("mkdir ", temp.name, sep = "")
-    write(str.7, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo LISTING tmp", file = output.file, append = TRUE)
-    write("cd /tmp", file = output.file, append = TRUE)
-    write("ls ", file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo entrando na pasta", file = output.file, append = TRUE)
-    str = paste("cd ", name, sep="")
-    write(str, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo LISTING tmp/NAME", file = output.file, append = TRUE)
-    write("ls ", file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo COPYING SINGULARITY", file = output.file, append = TRUE)
-    str.30 = paste("cp /home/u704616/Experimentos-3.sif ", temp.name, sep ="")
-    write(str.30 , file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO TESTED", file = output.file, append = TRUE)
-    str.29 = paste("mkdir ", temp.name, "/Local", sep="")
-    write(str.29, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO DATASET", file = output.file, append = TRUE)
-    str.28 = paste("mkdir ", temp.name, "/Datasets", sep="")
-    write(str.28, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO Dataset", file = output.file, append = TRUE)
-    str.26 = paste("mkdir ", temp.name, "/Datasets/", 
-                   dataset$Name, sep="")
-    write(str.26, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO labelSpace", file = output.file, append = TRUE)
-    str.25 = paste("mkdir ", temp.name, "/Datasets/", 
-                   dataset$Name, "/LabelSpace", sep="")
-    write(str.25, file = output.file, append = TRUE)
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO properties", file = output.file, append = TRUE)
-    str.40 = paste("mkdir ", temp.name, "/Datasets/", 
-                   dataset$Name, "/Properties", sep="")
-    write(str.40, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO nameslabels", file = output.file, append = TRUE)
-    str.24 = paste("mkdir ", temp.name, "/Datasets/", 
-                   dataset$Name, "/NamesLabels", sep="")
-    write(str.24, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO CV", file = output.file, append = TRUE)
-    str.23 = paste("mkdir ", temp.name, "/Datasets/", 
-                   dataset$Name, "/CrosValidation", sep="")
-    write(str.23, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO CVTR", file = output.file, append = TRUE)
-    str.21 = paste("mkdir ",temp.name, "/Datasets/", 
-                   dataset$Name, "/CrosValidation/Tr", sep="")
-    write(str.21, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO CVTS", file = output.file, append = TRUE)
-    str.20 = paste("mkdir ",temp.name, "/Datasets/", 
-                   dataset$Name, "/CrosValidation/Ts", sep="")
-    write(str.20, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo CRIANDO CVVL", file = output.file, append = TRUE)
-    str.19 = paste("mkdir ",temp.name, "/Datasets/", 
-                   dataset$Name, "/CrosValidation/Vl", sep="")
-    write(str.19, file = output.file, append = TRUE)
-    
-    
-    write(" ", file = output.file, append = TRUE)
-    write("echo INICIALIZANDO O SINGULARITY", file = output.file, append = TRUE)
-    str = paste("singularity instance start --bind ~/.config/rclone/:/root/.config/rclone ", 
-                temp.name, "/Experimentos-3.sif EXPL", a, sep="")
-    write(str, file = output.file, append = TRUE)
-    
-    
-    write(" ", file = output.file, append = TRUE)
-    write("echo EXECUTANDO", file = output.file, append = TRUE)
-    str = paste("singularity run --app Rscript instance://EXPL", a,
-                " /Local-Partitions/R/local.R \"",
-                config.file.name, "\"", sep="")
-    write(str, file = output.file, append = TRUE)
-    
-    
-    write(" ", file = output.file, append = TRUE)
-    write("echo STOP INSTANCIA", file = output.file, append = TRUE)
-    str = paste("singularity instance stop EXPL", a, sep="")
-    write(str,file = output.file, append = TRUE)
-    
-    
-    write(" ", file = output.file, append = TRUE)
-    write("echo DELETING JOB FOLDER", file = output.file, append = TRUE)
-    str.13 = paste("rm -rf ", temp.name, sep = "")
-    write(str.13, file = output.file, append = TRUE)
-    
-    
-    write("", file = output.file, append = TRUE)
-    write("echo ==================================", 
-          file = output.file, append = TRUE)
-    write("echo SBATCH: ENDED SUCCESSFULLY", file = output.file, append = TRUE)
-    write("echo ==================================", 
-          file = output.file, append = TRUE)
-    
-    close(output.file)
-    
-    a = a + 1
-    i = i + 1
+  # SIMILARIDADE
+  s = 1
+  while(s<=length(Similarity.1)){
+    
+    FolderSimilarity = paste(FolderImplementation, "/", Similarity.1[s], sep="")
+    if(dir.exists(FolderSimilarity)==FALSE){dir.create(FolderSimilarity)}
+    
+    FolderS = paste(FolderI, "/", Similarity.1[s], sep="")
+    
+    # DENDROGRAMA
+    f = 1
+    while(f<=length(Dendrogram.1)){
+      
+      FolderDendro = paste(FolderSimilarity, "/", Dendrogram.1[f], sep="")
+      if(dir.exists(FolderDendro)==FALSE){dir.create(FolderDendro)}
+      
+      FolderD = paste(FolderS, "/", Dendrogram.1[f], sep="")
+      
+      # CRITERIA
+      w = 1
+      while(w<=length(Criteria.1)){
+        
+        FolderCriteria = paste(FolderDendro, "/", Criteria.1[w], sep="")
+        if(dir.exists(FolderCriteria)==FALSE){dir.create(FolderCriteria)}
+        
+        FolderC = paste(FolderD, "/", Criteria.1[w], sep="")
+        
+        # DATASET
+        d = 1
+        a = 1
+        while(d<=nrow(datasets)){
+          
+          ds = datasets[d,]
+          
+          cat("\n\n=======================================")
+          cat("\n", Implementation.1[p])
+          cat("\n\t", Similarity.1[s])
+          cat("\n\t", Dendrogram.1[f])
+          cat("\n\t", Criteria.1[w])
+          cat("\n\t", ds$Name)
+          
+          name = paste("stand-", ds$Name, sep="")  
+          
+          # directory name - "/scratch/eg-3s-bbc1000"
+          scratch.name = paste("/tmp/", name, sep = "")
+          
+          # Confi File Name - "eg-3s-bbc1000.csv"
+          config.file.name = paste(name, ".csv", sep="")
+          
+          # sh file name - "~/Global-Partitions/jobs/utiml/eg-3s-bbc1000.sh
+          sh.name = paste(FolderCriteria, "/", name, ".sh", sep = "")
+          
+          # config file name - "~/Global-Partitions/config-files/utiml/eg-3s-bbc1000.csv"
+          config.name = paste(FolderC, "/", config.file.name, sep = "")
+          
+          # start writing
+          output.file <- file(sh.name, "wb")
+          
+          # bash parameters
+          write("#!/bin/bash", file = output.file)
+          
+          str.1 = paste("#SBATCH -J ", name, sep = "")
+          write(str.1, file = output.file, append = TRUE)
+          
+          write("#SBATCH -o %j.out", file = output.file, append = TRUE)
+          
+          # number of processors
+          write("#SBATCH -n 1", file = output.file, append = TRUE)
+          
+          # number of cores
+          write("#SBATCH -c 10", file = output.file, append = TRUE)
+          
+          # uncomment this line if you are using slow partition
+          # write("#SBATCH --partition slow", file = output.file, append = TRUE)
+          
+          # uncomment this line if you are using slow partition
+          # write("#SBATCH -t 720:00:00", file = output.file, append = TRUE)
+          
+          # comment this line if you are using slow partition
+          write("#SBATCH -t 128:00:00", file = output.file, append = TRUE)
+          
+          # uncomment this line if you need to use all node memory
+          # write("#SBATCH --mem=0", file = output.file, append = TRUE)
+          
+          # amount of node memory you want to use
+          # comment this line if you are using -mem=0
+          write("#SBATCH --mem-per-cpu=30GB", file = output.file, append = TRUE)
+          # write("#SBATCH -mem=0", file = output.file, append = TRUE)
+          
+          # email to receive notification
+          write("#SBATCH --mail-user=elainegatto@estudante.ufscar.br",
+                file = output.file, append = TRUE)
+          
+          # type of notification
+          write("#SBATCH --mail-type=ALL", file = output.file, append = TRUE)
+          write("", file = output.file, append = TRUE)
+          
+          # FUNCTION TO CLEAN THE JOB
+          str.2 = paste("local_job=", scratch.name, sep = "")
+          write(str.2, file = output.file, append = TRUE)
+          
+          write("function clean_job(){", file = output.file, append = TRUE)
+          
+          str.3 = paste(" echo", "\"CLEANING ENVIRONMENT...\"", sep = " ")
+          write(str.3, file = output.file, append = TRUE)
+          
+          str.4 = paste(" rm -rf ", "\"${local_job}\"", sep = "")
+          write(str.4, file = output.file, append = TRUE)
+          
+          write("}", file = output.file, append = TRUE)
+          
+          write("trap clean_job EXIT HUP INT TERM ERR", 
+                file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          
+          
+          # MANDATORY PARAMETERS
+          write("set -eE", file = output.file, append = TRUE)
+          write("umask 077", file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo =============================================================", 
+                file = output.file, append = TRUE)
+          str.5 = paste("echo SBATCH: RUNNING STANDARD HPML FOR ", 
+                        ds$Name, sep="")
+          write(str.5, file = output.file, append = TRUE)
+          write("echo =============================================================", 
+                file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo DELETING FOLDER", file = output.file, append = TRUE)
+          str.6 = paste("rm -rf ", scratch.name, sep = "")
+          write(str.6, file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CREATING FOLDER", file = output.file, append = TRUE)
+          str.7 = paste("mkdir ", scratch.name, sep = "")
+          write(str.7, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo LISTING TMP", file = output.file, append = TRUE)
+          write("cd /tmp", file = output.file, append = TRUE)
+          write("ls ", file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo entrando na pasta", file = output.file, append = TRUE)
+          str = paste("cd ", name, sep="")
+          write(str, file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo LISTING tmp/NAME", file = output.file, append = TRUE)
+          write("ls ", file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo COPYING SINGULARITY", file = output.file, append = TRUE)
+          str.30 = paste("cp /home/u704616/Experimentos-1.sif ", scratch.name, sep ="")
+          write(str.30 , file = output.file, append = TRUE)
+     
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO TESTED", file = output.file, append = TRUE)
+          str.29 = paste("mkdir ", scratch.name, "/Tested", sep="")
+          write(str.29, file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO DATASET", file = output.file, append = TRUE)
+          str.28 = paste("mkdir ", scratch.name, "/Datasets", sep="")
+          write(str.28, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO PARTITIONS", file = output.file, append = TRUE)
+          str.27 = paste("mkdir ", scratch.name, "/Partitions", sep="")
+          write(str.27, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.26 = paste("mkdir ", scratch.name, "/Datasets/", 
+                         ds$Name, sep="")
+          write(str.26, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.25 = paste("mkdir ", scratch.name, "/Datasets/", 
+                         ds$Name, "/LabelSpace", sep="")
+          write(str.25, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.24 = paste("mkdir ", scratch.name, "/Datasets/", 
+                         ds$Name, "/NamesLabels", sep="")
+          write(str.24, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.23 = paste("mkdir ", scratch.name, "/Datasets/", 
+                         ds$Name, "/CrosValidation", sep="")
+          write(str.23, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.21 = paste("mkdir ",scratch.name, "/Datasets/", 
+                         ds$Name, "/CrosValidation/Tr", sep="")
+          write(str.21, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.20 = paste("mkdir ",scratch.name, "/Datasets/", 
+                         ds$Name, "/CrosValidation/Ts", sep="")
+          write(str.20, file = output.file, append = TRUE)
+          
+          write("", file = output.file, append = TRUE)
+          write("echo CRIANDO pasta", file = output.file, append = TRUE)
+          str.19 = paste("mkdir ",scratch.name, "/Datasets/", 
+                         ds$Name, "/CrosValidation/Vl", sep="")
+          write(str.19, file = output.file, append = TRUE)
+          
+          
+          write(" ", file = output.file, append = TRUE)
+          write("echo INICIANDO INSTANCIA", file = output.file, append = TRUE)
+          str = paste("singularity instance start --bind ~/.config/rclone/:/root/.config/rclone ", 
+                      scratch.name, "/Experimentos-1.sif EXPS", a, sep="")
+          write(str, file = output.file, append = TRUE)
+          
+          
+          write(" ", file = output.file, append = TRUE)
+          write("echo EXECUTANDO", file = output.file, append = TRUE)
+          str = paste("singularity run --app Rscript instance://EXPS",
+                      a, " /Standard-HPML/R/start.R \"/Standard-HPML/config-files-ufscar/",
+                      Implementation.1[p], "/", Similarity.1[s], "/", 
+                      Dendrogram.1[f], "/", Criteria.1[w], "/", 
+                      config.file.name, "\"", sep="")
+          write(str, file = output.file, append = TRUE)
+          
+          
+          write(" ", file = output.file, append = TRUE)
+          write("echo STOP INSTANCIA", file = output.file, append = TRUE)
+          str = paste("singularity instance stop EXPS", a, sep="")
+          write(str, file = output.file, append = TRUE)
+          
+          
+          write(" ", file = output.file, append = TRUE)
+          write("echo DELETING JOB FOLDER", file = output.file, append = TRUE)
+          str.13 = paste("rm -rf ", scratch.name, sep = "")
+          write(str.13, file = output.file, append = TRUE)
+          
+          
+          write("", file = output.file, append = TRUE)
+          write("echo ==================================", 
+                file = output.file, append = TRUE)
+          write("echo SBATCH: ENDED SUCCESSFULLY", 
+                file = output.file, append = TRUE)
+          write("echo ==================================", 
+                file = output.file, append = TRUE)
+          
+          close(output.file)
+          
+          a = a + 1
+          d = d + 1
+          gc()
+        } # FIM DO DATASET
+        
+        w = w + 1
+        gc()
+      } # FIM DO CRITERIO
+      
+      f = f + 1
+      gc()
+      
+    } # FIM DO DENDROGRAMA
+    
+    s = s + 1
     gc()
-  }
-  w = w + 1
+  } # FIM DA SIMILARIDADE
+  
+  p = p + 1
   gc()
-}
-
-cat("\n================================================")
+} # FIM DA IMPLEMENTAÇÃO
 
 
 ###############################################################################

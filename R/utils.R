@@ -1,5 +1,5 @@
 ##############################################################################
-# LOCAL PARTITIONS                                                           #
+# STANDARD HPML                                                              #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -27,34 +27,40 @@
 
 
 
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
-FolderRoot = "~/Local-Partitions"
-FolderScripts = "~/Local-Partitions/R"
+##################################################
+# SET WORK SPACE
+##################################################
+FolderRoot = "~/Standard-HPML"
+FolderScripts = "~/Standard-HPML/R"
 
 
 
 
-##################################################################################################
-# FUNCTION DIRECTORIES                                                                           #
-#   Objective:                                                                                   #
-#      Creates all the necessary folders for the project. These are the main folders that must   # 
-#      be created and used before the script starts to run                                       #  
-#   Parameters:                                                                                  #
-#      None                                                                                      #
-#   Return:                                                                                      #
-#      All path directories                                                                      #
-##################################################################################################
-directories <- function(dataset_name, folderResults){
+#########################################################################
+# FUNCTION DIRECTORIES                                   
+#   Objective:                                           
+#      Creates all the necessary folders for the project.
+#   Parameters:                                          
+#      dataset_name: name of the dataset                 
+#      folderResults: path to save process the algorithm. 
+#               Example: "/dev/shm/birds", "/scratch/birds", 
+#            "/home/usuario/birds", "/C:/Users/usuario/birds"
+#   Return:                                                              
+#      All path directories                                              
+#########################################################################
+directories <- function(parameters){
+  
+  FolderRoot = "~/Standard-HPML"
+  FolderScripts = "~/Standard-HPML/R"
   
   retorno = list()
+  
+  folderResults = parameters$Config$Folder.Results
   
   #############################################################################
   # RESULTS FOLDER:                                                           #
   # Parameter from command line. This folder will be delete at the end of the #
   # execution. Other folder is used to store definitely the results.          #
-  # Example: "/dev/shm/result"; "/scratch/result"; "/tmp/result"              #
   #############################################################################
   if(dir.exists(folderResults) == TRUE){
     setwd(folderResults)
@@ -66,22 +72,14 @@ directories <- function(dataset_name, folderResults){
     dir_folderResults = dir(folderResults)
     n_folderResults = length(dir_folderResults)
   }
+  retorno$folderResults = folderResults
   
   
-  
-  folderLocal = paste(folderResults, "/Local", sep="")
-  if(dir.exists(folderLocal) == TRUE){
-    setwd(folderLocal)
-    dir_folderLocal = dir(folderLocal)
-    n_folderLocal = length(dir_folderLocal)
-  } else {
-    dir.create(folderLocal)
-    setwd(folderLocal)
-    dir_folderLocal = dir(folderLocal)
-    n_folderLocal = length(dir_folderLocal)
-  }
-  
-  
+  #############################################################################
+  # UTILS FOLDER:                                                             #
+  # Get information about the files within folder utils that already exists   #
+  # in the project.                                                           #
+  #############################################################################
   folderUtils = paste(FolderRoot, "/Utils", sep="")
   if(dir.exists(folderUtils) == TRUE){
     setwd(folderUtils)
@@ -93,49 +91,169 @@ directories <- function(dataset_name, folderResults){
     dir_folderUtils = dir(folderUtils)
     n_folderUtils = length(dir_folderUtils)
   }
+  retorno$folderUtils = folderUtils
   
   
+  ############################################################################
+  # PYTHON FOLDER:                                                           #
+  # Folder that contains the python scripts                                  #
   #############################################################################
-  # DATASET FOLDER: "/dev/shm/results/Dataset"                                #
-  #         Folder that will temporarily store the dataset files and folders  #
-  #############################################################################
-  folderDataset = paste(folderResults, "/Dataset", sep="")
-  if(dir.exists(folderDataset) == TRUE){
-    setwd(folderDataset)
-    dir_folderDataset = dir(folderDataset)
-    n_folderDataset = length(dir_folderDataset)
+  folderPython = paste(folderUtils, "/Python", sep="")
+  if(dir.exists(folderPython) == TRUE){
+    setwd(folderPython)
+    dir_folderPython = dir(folderPython)
+    n_folderPython = length(dir_folderPython)
   } else {
-    dir.create(folderDataset)
-    setwd(folderDataset)
-    dir_folderDataset = dir(folderDataset)
-    n_folderDataset = length(dir_folderDataset)
+    dir.create(folderPython)
+    setwd(folderPython)
+    dir_folderPython = dir(folderPython)
+    n_folderPython = length(dir_folderPython)
   }
+  retorno$folderPython = folderPython
+  
+  
+  #############################################################################
+  #
+  #############################################################################
+  # folderReports = paste(FolderRoot, "/Reports", sep="")
+  # if(dir.exists(folderReports) == TRUE){
+  #   setwd(folderReports)
+  #   dir_folderReports = dir(folderReports)
+  #   n_folderReports = length(dir_folderReports)
+  # } else {
+  #   dir.create(folderReports)
+  #   setwd(folderReports)
+  #   dir_folderReports = dir(folderReports)
+  #   n_folderReports = length(dir_folderReports)
+  # }
+  
+  #############################################################################
+  # TESTED FOLDER                                                             #
+  #############################################################################
+  folderTested = paste(folderResults, "/Tested", sep="")
+  if(dir.exists(folderTested) == TRUE){
+    setwd(folderTested)
+    dir_folderTested = dir(folderTested)
+    n_folderTested = length(dir_folderTested)
+  } else {
+    dir.create(folderTested)
+    setwd(folderTested)
+    dir_folderTested = dir(folderTested)
+    n_folderTested = length(dir_folderTested)
+  }
+  retorno$folderTested = folderTested
+  
+  
+  
+  #############################################################################
+  # DATASETS FOLDER:                                                          #
+  # Get the information within DATASETS folder that already exists in the     #
+  # project. This folder store the files from cross-validation and will be    #
+  # use to get the label space to modeling the label correlations and         #
+  # compute silhouete to choose the best hybrid partition.                    #
+  # "/home/[user]/Partitions-Kohonen/datasets"                                #
+  #############################################################################
+  folderDatasets = paste(folderResults, "/Datasets", sep="")
+  if(dir.exists(folderDatasets) == TRUE){
+    setwd(folderDatasets)
+    dir_folderDatasets = dir(folderDatasets)
+    n_folderDatasets = length(dir_folderDatasets)
+  } else {
+    dir.create(folderDatasets)
+    setwd(folderDatasets)
+    dir_folderDatasets = dir(folderDatasets)
+    n_folderDatasets = length(dir_folderDatasets)
+  }
+  retorno$folderDatasets = folderDatasets
   
   
   #############################################################################
   # SPECIFIC DATASET FOLDER:                                                  #
-  #         "/dev/shm/results/Dataset/GpositiveGO"                            #
-  #         Folder that will temporarily store the dataset files and folders  #
+  # Path to the specific dataset that is runing. Example: with you are        # 
+  # running this code for EMOTIONS dataset, then this get the path from it    #
+  # "/home/[user]/Partitions-Kohonen/datasets/birds"                          #
   #############################################################################
-  folderDatasetX = paste(folderDataset, "/", dataset_name, sep="")
-  if(dir.exists(folderDatasetX) == TRUE){
-    setwd(folderDatasetX)
-    dir_folderDatasetX = dir(folderDatasetX)
-    n_folderDatasetX = length(dir_folderDatasetX)
+  folderSpecificDataset = paste(folderDatasets, "/", dataset_name, sep="")
+  if(dir.exists(folderSpecificDataset) == TRUE){
+    setwd(folderSpecificDataset)
+    dir_folderSpecificDataset = dir(folderSpecificDataset)
+    n_folderSpecificDataset = length(dir_folderSpecificDataset)
   } else {
-    dir.create(folderDatasetX)
-    setwd(folderDatasetX)
-    dir_folderDatasetX = dir(folderDatasetX)
-    n_folderDatasetX = length(dir_folderDatasetX)
+    dir.create(folderSpecificDataset)
+    setwd(folderSpecificDataset)
+    dir_folderSpecificDataset = dir(folderSpecificDataset)
+    n_folderSpecificDataset = length(dir_folderSpecificDataset)
   }
+  retorno$folderSpecificDataset = folderSpecificDataset
+  
+  
+  #############################################################################
+  # LABEL SPACE FOLDER:                                                       #
+  # Path to the specific label space from the dataset that is runing.         #
+  # This folder store the label space for each FOLD from the cross-validation #
+  # which was computed in the Cross-Validation Multi-Label code.              #
+  # In this way, we don't need to load the entire dataset into the running    #
+  # "/home/elaine/Partitions-Kohonen/datasets/birds/LabelSpace"               #
+  #############################################################################
+  folderLabelSpace = paste(folderSpecificDataset, "/LabelSpace", sep="")
+  if(dir.exists(folderLabelSpace) == TRUE){
+    setwd(folderLabelSpace)
+    dir_folderLabelSpace = dir(folderLabelSpace)
+    n_folderLabelSpace = length(dir_folderLabelSpace)
+  } else {
+    dir.create(folderLabelSpace)
+    setwd(folderLabelSpace)
+    dir_folderLabelSpace = dir(folderLabelSpace)
+    n_folderLabelSpace = length(dir_folderLabelSpace)
+  }
+  retorno$folderLabelSpace = folderLabelSpace
+  
+  
+  #############################################################################
+  # NAMES LABELS FOLDER:                                                      #
+  # Get the names of the labels from this dataset. This will be used in the   #
+  # code to create the groups for each partition. Is a way to guarantee the   #
+  # use of the correct names labels.                                          #
+  # "/home/[user]/Partitions-Kohonen/datasets/birds/NamesLabels"              #
+  #############################################################################
+  folderNamesLabels = paste(folderSpecificDataset, "/NamesLabels", sep="")
+  if(dir.exists(folderNamesLabels) == TRUE){
+    setwd(folderNamesLabels)
+    dir_folderNamesLabels = dir(folderNamesLabels)
+    n_folderNamesLabels = length(dir_folderNamesLabels)
+  } else {
+    dir.create(folderNamesLabels)
+    setwd(folderNamesLabels)
+    dir_folderNamesLabels = dir(folderNamesLabels)
+    n_folderNamesLabels = length(dir_folderNamesLabels)
+  } 
+  retorno$folderNamesLabels = folderNamesLabels
+  
+  
+  #############################################################################
+  #
+  #############################################################################
+  folderProperties = paste(folderSpecificDataset, "/Properties", sep="")
+  if(dir.exists(folderProperties) == TRUE){
+    setwd(folderProperties)
+    dir_folderProperties = dir(folderProperties)
+    n_folderProperties = length(dir_folderProperties)
+  } else {
+    dir.create(folderProperties)
+    setwd(folderProperties)
+    dir_folderProperties = dir(folderProperties)
+    n_folderProperties = length(dir_folderProperties)
+  }
+  retorno$folderProperties = folderProperties
   
   
   #############################################################################
   # CROSS VALIDATION FOLDER:                                                  #
-  #         "/dev/shm/results/Dataset/GpositiveGO/CrossValidation"            #
-  #         Folder that will temporarily store the dataset files and folders  #
+  # Path to the folders and files from cross-validation for the specific      # 
+  # dataset                                                                   #
+  # "/home/[user]/Partitions-Kohonen/datasets/birds/CrossValidation"          #
   #############################################################################
-  folderCV = paste(folderDatasetX, "/CrossValidation", sep="")
+  folderCV = paste(folderSpecificDataset, "/CrossValidation", sep="")
   if(dir.exists(folderCV) == TRUE){
     setwd(folderCV)
     dir_folderCV = dir(folderCV)
@@ -146,12 +264,13 @@ directories <- function(dataset_name, folderResults){
     dir_folderCV = dir(folderCV)
     n_folderCV = length(dir_folderCV)
   }
+  retorno$folderCV = folderCV
   
   
   #############################################################################
-  # CROSS VALIDATION TRAIN FILES/FOLDER:                                      #
-  #         "/dev/shm/results/Dataset/GpositiveGO/CrossValidation/Tr"         #
-  #         Folder that will temporarily store the dataset files and folders  #
+  # TRAIN CROSS VALIDATION FOLDER:                                            #
+  # Path to the train files from cross-validation for the specific dataset    #                                                                   #
+  # "/home/[user]/Partitions-Kohonen/datasets/birds/CrossValidation/Tr"       #
   #############################################################################
   folderCVTR = paste(folderCV, "/Tr", sep="")
   if(dir.exists(folderCVTR) == TRUE){
@@ -164,12 +283,13 @@ directories <- function(dataset_name, folderResults){
     dir_folderCVTR = dir(folderCVTR)
     n_folderCVTR = length(dir_folderCVTR)
   }
+  retorno$folderCVTR = folderCVTR
   
   
   #############################################################################
-  # CROSS VALIDATION TEST FILES/FOLDER:                                       #
-  #          "/dev/shm/results/Dataset/GpositiveGO/CrossValidation/Ts"        #
-  #         Folder that will temporarily store the dataset files and folders  #
+  # TEST CROSS VALIDATION FOLDER:                                             #
+  # Path to the test files from cross-validation for the specific dataset     #                                                                   #
+  # "/home/[user]/Partitions-Kohonen/datasets/birds/CrossValidation/Ts"       #
   #############################################################################
   folderCVTS = paste(folderCV, "/Ts", sep="")
   if(dir.exists(folderCVTS) == TRUE){
@@ -182,12 +302,14 @@ directories <- function(dataset_name, folderResults){
     dir_folderCVTS = dir(folderCVTS)
     n_folderCVTS = length(dir_folderCVTS)
   }
+  retorno$folderCVTS = folderCVTS
   
   
   #############################################################################
-  # CROSS VALIDATION VALIDATION FILES/FOLDER:                                 #
-  #         "/dev/shm/results/Dataset/GpositiveGO/CrossValidation/Vl"         #
-  #         Folder that will temporarily store the dataset files and folders  #
+  # VALIDATION CROSS VALIDATION FOLDER:                                       #
+  # Path to the validation files from cross-validation for the specific       #
+  # dataset                                                                   #                                                           
+  # "/home/[user]/Partitions-Kohonen/datasets/birds/CrossValidation/Vl"       #
   #############################################################################
   folderCVVL = paste(folderCV, "/Vl", sep="")
   if(dir.exists(folderCVVL) == TRUE){
@@ -200,102 +322,124 @@ directories <- function(dataset_name, folderResults){
     dir_folderCVVL = dir(folderCVVL)
     n_folderCVVL = length(dir_folderCVVL)
   }
-  
-  
-  #############################################################################
-  # CROSS VALIDATION LABEL SPACE FILES/FOLDER:                                #
-  #         "/dev/shm/results/Dataset/GpositiveGO/LabelSpace"                 #
-  #         Folder that will temporarily store the dataset files and folders  #
-  #############################################################################
-  folderLabelSpace = paste(folderDatasetX, "/LabelSpace", sep="")
-  if(dir.exists(folderLabelSpace) == TRUE){
-    setwd(folderLabelSpace)
-    dir_folderLabelSpace = dir(folderLabelSpace)
-    n_folderLabelSpace = length(dir_folderLabelSpace)
-  } else {
-    dir.create(folderLabelSpace)
-    setwd(folderLabelSpace)
-    dir_folderLabelSpace = dir(folderLabelSpace)
-    n_folderLabelSpace = length(dir_folderLabelSpace)
-  }
-  
-  
-  #############################################################################
-  # CROSS VALIDATION LABELS NAMES FILES/FOLDER:                               #
-  #        "/dev/shm/results/Dataset/GpositiveGO/NamesLabels"                 #
-  #         Folder that will temporarily store the dataset files and folders  #
-  #############################################################################
-  folderNamesLabels = paste(folderDatasetX, "/NamesLabels", sep="")
-  if(dir.exists(folderNamesLabels) == TRUE){
-    setwd(folderNamesLabels)
-    dir_folderNamesLabels = dir(folderNamesLabels)
-    n_folderNamesLabels = length(dir_folderNamesLabels)
-  } else {
-    dir.create(folderNamesLabels)
-    setwd(folderNamesLabels)
-    dir_folderNamesLabels = dir(folderNamesLabels)
-    n_folderNamesLabels = length(dir_folderNamesLabels)
-  }
-  
-  
-  # return folders
-  retorno$folderUtils = folderUtils
-  retorno$folderLocal = folderLocal
-  retorno$folderResults = folderResults
-  retorno$folderDataset = folderDataset
-  retorno$folderDatasetX = folderDatasetX
-  retorno$folderCV = folderCV
-  retorno$folderCVTR = folderCVTR
-  retorno$folderCVTS = folderCVTS
   retorno$folderCVVL = folderCVVL
-  retorno$folderLabelSpace = folderLabelSpace
-  retorno$folderNamesLabels = folderNamesLabels
   
   
-  # return folder contents
-  retorno$dir_folderLocal = dir_folderLocal
-  retorno$dir_folderResults = dir_folderResults
-  retorno$dir_folderDataset = dir_folderDataset
-  retorno$dir_folderDatasetX = dir_folderDatasetX
-  retorno$dir_folderCV = dir_folderCV
-  retorno$dir_folderCVTR = dir_folderCVTR
-  retorno$dir_folderCVTS = dir_folderCVTS
-  retorno$dir_folderCVVL = dir_folderCVVL
-  retorno$dir_folderLabelSpace = dir_folderLabelSpace
-  retorno$dir_folderNamesLabels = dir_folderNamesLabels
+  #############################################################################
+  # RESULTS DATASET FOLDER:                                                   #
+  # Path to the results for the specific dataset that is running              #                                                           
+  # "/dev/shm/res/birds"                                                      #
+  #############################################################################
+  folderResultsDataset = paste(folderResults, "/", dataset_name, sep="")
+  if(dir.exists(folderResultsDataset) == TRUE){
+    setwd(folderResultsDataset)
+    dir_folderResultsDataset = dir(folderResultsDataset)
+    n_folderResultsDataset = length(dir_folderResultsDataset)
+  } else {
+    dir.create(folderResultsDataset)
+    setwd(folderResultsDataset)
+    dir_folderResultsDataset = dir(folderResultsDataset)
+    n_folderResultsDataset = length(dir_folderResultsDataset)
+  }
+  retorno$folderResultsDataset = folderResultsDataset
   
   
-  # return of the number of objects inside the folder
-  retorno$n_folderLocal = n_folderLocal
-  retorno$n_folderResults = n_folderResults
-  retorno$n_folderDataset = n_folderDataset
-  retorno$n_folderDatasetX = n_folderDatasetX
-  retorno$n_folderCV = n_folderCV
-  retorno$n_folderCVTR = n_folderCVTR
-  retorno$n_folderCVTS = n_folderCVTS
-  retorno$n_folderCVVL = n_folderCVVL
-  retorno$n_folderLabelSpace = n_folderLabelSpace
-  retorno$n_folderNamesLabels = n_folderNamesLabels
-  
+  #############################################################################
+  # RESULTS PARTITIONS FOLDER:                                                #
+  # Folder to store the results from partitioning the label correlations      #
+  # "/dev/shm/res/birds/Partitions"                                           #
+  #############################################################################
+  folderPartitions = paste(folderResults, "/Partitions", sep="")
+  if(dir.exists(folderPartitions) == TRUE){
+    setwd(folderPartitions)
+    dir_folderPartitions = dir(folderPartitions)
+    n_folderPartitions = length(dir_folderPartitions)
+  } else {
+    dir.create(folderPartitions)
+    setwd(folderPartitions)
+    dir_folderPartitions = dir(folderPartitions)
+    n_folderPartitions = length(dir_folderPartitions)
+  }
+  retorno$folderPartitions = folderPartitions
   
   return(retorno)
   gc()
-  
 }
 
 
 
-##################################################################################################
-# FUNCTION INFO DATA SET                                                                         #
-#  Objective                                                                                     #
-#     Gets the information that is in the "datasets.csv" file.                                    #  
-#  Parameters                                                                                    #
-#     dataset: the specific dataset                                                              #
-#  Return                                                                                        #
-#     Everything in the spreadsheet                                                              #
-##################################################################################################
-infoDataSet <- function(dataset){
+###########################################################################
+# FUNCTION LABEL SPACE                                                  
+#   Objective                                                           
+#       Separates the label space from the rest of the data to be used
+#      as input for calculating correlations                          
+#   Parameters                                                        
+#       ds: specific dataset information
+#       dataset_name: dataset name. It is used to save files.
+#       number_folds: number of folds created                
+#       folderResults: folder where to save results          
+#   Return:                                                  
+#       Training set labels space                            
+#######################################################################
+labelSpace <- function(parameters){
+  
   retorno = list()
+  
+  # return all fold label space
+  classes = list()
+  
+  # from the first FOLD to the last
+  k = 1
+  while(k<=parameters$Config$Number.Folds){
+    
+    # get the correct fold cross-validation
+    nome_arquivo = paste(parameters$Folders$folderCVTR,
+                         "/", dataset_name, 
+                         "-Split-Tr-", k, ".csv", sep="")
+    
+    # open the file
+    arquivo = data.frame(read.csv(nome_arquivo))
+    
+    # split label space from input space
+    classes[[k]] = arquivo[,ds$LabelStart:ds$LabelEnd]
+    
+    # get the names labels
+    namesLabels = c(colnames(classes[[k]]))
+    
+    # increment FOLD
+    k = k + 1 
+    
+    # garbage collection
+    gc() 
+    
+  } # End While of the 10-folds
+  
+  # return results
+  retorno$NamesLabels = namesLabels
+  retorno$Classes = classes
+  return(retorno)
+  
+  gc()
+  cat("\n##########################################################")
+  cat("\n# FUNCTION LABEL SPACE: END                              #") 
+  cat("\n##########################################################")
+  cat("\n\n\n\n")
+}
+
+
+#######################################################################
+# FUNCTION INFO DATA SET                                               
+#  Objective                                                           
+#     Gets the information that is in the "datasets-hpmlk.csv" file.   
+#  Parameters                                                          
+#     dataset: the specific dataset                                    
+#  Return                                                              
+#     Everything in the "datasets-hpmlk.csv" file.                     
+#######################################################################
+infoDataSet <- function(dataset){
+  
+  retorno = list()
+  
   retorno$id = dataset$ID
   retorno$name = dataset$Name
   retorno$instances = dataset$Instances
@@ -313,398 +457,398 @@ infoDataSet <- function(dataset){
   retorno$attEnd = dataset$AttEnd
   retorno$labStart = dataset$LabelStart
   retorno$labEnd = dataset$LabelEnd
+  retorno$distinct = dataset$Distinct
+  retorno$xn = dataset$xn
+  retorno$yn = dataset$yn
+  retorno$gridn = dataset$gridn
+  
   return(retorno)
+  
   gc()
 }
 
 
-############################################################################
-converteArff <- function(arg1, arg2, arg3, FolderUtils){  
-  str = paste("java -jar ", FolderUtils,  "/R_csv_2_arff.jar ", 
-              arg1, " ", arg2, " ", arg3, sep="")
+
+#########################################################################
+# Function to correctly convert CSV in ARFF
+converteArff <- function(arg1, arg2, arg3){
+  str = paste("java -jar ", parameters$Folders$folderUtils,
+              "/R_csv_2_arff.jar ", arg1, " ", arg2, " ", arg3, sep="")
   print(system(str))
-  cat("\n\n")  
+  cat("\n")
 }
 
 
-############################################################################
-properties.datasets <- function(parameters){
+
+##############################################################################
+#
+##############################################################################
+get.all.partitions <- function(parameters){
   
-  fold = c(0)
-  num.attributes = c(0)
-  num.instances = c(0)
-  num.inputs = c(0)
-  num.labels = c(0)
-  num.labelsets = c(0)
-  num.single.labelsets = c(0)
-  max.frequency = c(0)
-  cardinality = c(0)
-  density = c(0)
-  meanIR = c(0)
-  scumble = c(0)
-  scumble.cv = c(0)
-  tcs = c(0)
+  retorno = list()
   
-  measures.treino = data.frame(fold, num.attributes, num.instances, num.inputs,
-                               num.labels, num.labelsets, num.single.labelsets,
-                               max.frequency, cardinality, density, meanIR,
-                               scumble, scumble.cv, tcs)
+  pasta.best = paste(parameters$Folders$folderPartitions, 
+                     "/", parameters$Config$Dataset.Name, 
+                     "/", parameters$Config$Dataset.Name, 
+                     "-Best-Silhouete.csv", sep="")
+  best = data.frame(read.csv(pasta.best))
   
-  measures.teste = data.frame(fold, num.attributes, num.instances, num.inputs,
-                              num.labels, num.labelsets, num.single.labelsets,
-                              max.frequency, cardinality, density, meanIR,
-                              scumble, scumble.cv, tcs)
+  num.fold = c(0)
+  num.part = c(0)
+  num.group = c(0)
+  best.part.info = data.frame(num.fold, num.part, num.group)
   
-  measures.val = data.frame(fold, num.attributes, num.instances, num.inputs,
-                            num.labels, num.labelsets, num.single.labelsets,
-                            max.frequency, cardinality, density, meanIR,
-                            scumble, scumble.cv, tcs)
-  
-  measures.tv = data.frame(fold, num.attributes, num.instances, num.inputs,
-                           num.labels, num.labelsets, num.single.labelsets,
-                           max.frequency, cardinality, density, meanIR,
-                           scumble, scumble.cv, tcs)
-  
-  folder = paste(parameters$Directories$folderDataset, 
-                 "/", parameters$Dataset.Name,
-                 "/Properties", sep="")
-  if(dir.exists(folder)==FALSE){dir.create(folder)}
-  
+  all.partitions.info = data.frame()
+  all.total.labels = data.frame()
   
   f = 1
-  while(f<=parameters$Number.Folds){
-    
-    cat("\nFold ", f)
-    
-    ####################################################################
-    folderSave = paste(folder, "/Split-", f, sep="")
-    if(dir.exists(folderSave)==FALSE){dir.create(folderSave)}
-    
-    
-    ####################################################################
-    nome = paste(parameters$Directories$folderNamesLabels, 
-                 "/", parameters$Dataset.Name,
-                 "-NamesLabels.csv", sep="")
-    rotulos = data.frame(read.csv(nome))
-    names(rotulos) = c("index", "names.labels")
-    
-    
-    ####################################################################
-    nome = paste(parameters$Directories$folderCVTR, 
-                 "/", parameters$Dataset.Name,
-                 "-Split-Tr-", f, ".csv", sep="")
-    treino = data.frame(read.csv(nome))
-    
-    nome = paste(parameters$Directories$folderCVTS, 
-                 "/", parameters$Dataset.Name,
-                 "-Split-Ts-", f, ".csv", sep="")
-    teste = data.frame(read.csv(nome))
-    
-    nome = paste(parameters$Directories$folderCVVL, 
-                 "/", parameters$Dataset.Name,
-                 "-Split-Vl-", f, ".csv", sep="")
-    val = data.frame(read.csv(nome))
-    
-    tv = rbind(treino, val)
-    
-    
-    ##################################################################
-    treino.labels = treino[,parameters$Dataset.Info$LabelStart:parameters$Dataset.Info$LabelEnd]
-    teste.labels = teste[,parameters$Dataset.Info$LabelStart:parameters$Dataset.Info$LabelEnd]
-    val.labels = val[,parameters$Dataset.Info$LabelStart:parameters$Dataset.Info$LabelEnd]
-    tv.labels = tv[,parameters$Dataset.Info$LabelStart:parameters$Dataset.Info$LabelEnd]
-    
-    
-    ##########################################################################
-    treino.sd = apply(treino.labels , 2, sd)
-    treino.mean = apply(treino.labels , 2, mean)
-    treino.median = apply(treino.labels , 2, median)
-    treino.sum = apply(treino.labels , 2, sum)
-    treino.max = apply(treino.labels , 2, max)
-    treino.min = apply(treino.labels , 2, min)
-    treino.quartis = apply(treino.labels, 2, quantile, 
-                           probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
-    treino.summary = rbind(sd = treino.sd, mean = treino.mean, 
-                           median = treino.median,
-                           sum = treino.sum, max = treino.max, 
-                           min = treino.min, treino.quartis)
-    name = paste(folderSave, "/summary-train-", f, ".csv", sep="")
-    write.csv(treino.summary, name)
-    
-    
-    ##########################################################################
-    teste.sd = apply(teste.labels , 2, sd)
-    teste.mean = apply(teste.labels , 2, mean)
-    teste.median = apply(teste.labels , 2, median)
-    teste.sum = apply(teste.labels , 2, sum)
-    teste.max = apply(teste.labels , 2, max)
-    teste.min = apply(teste.labels , 2, min)
-    teste.quartis = apply(teste.labels, 2, quantile,
-                          probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
-    teste.summary = rbind(sd = teste.sd, mean = teste.mean, 
-                          median = teste.median,
-                          sum = teste.sum, max = teste.max, 
-                          min = teste.min, teste.quartis)
-    name = paste(folderSave, "/summary-test-", f, ".csv", sep="")
-    write.csv(teste.summary, name)
-    
-    
-    ##########################################################################
-    val.sd = apply(val.labels , 2, sd)
-    val.mean = apply(val.labels , 2, mean)
-    val.median = apply(val.labels , 2, median)
-    val.sum = apply(val.labels , 2, sum)
-    val.max = apply(val.labels , 2, max)
-    val.min = apply(val.labels , 2, min)
-    val.quartis = apply(val.labels, 2, quantile, 
-                        probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
-    val.summary = rbind(sd = val.sd, mean = val.mean, 
-                        median = val.median,
-                        sum = val.sum, max = val.max, 
-                        min = val.min, val.quartis)
-    name = paste(folderSave, "/summary-val-", f, ".csv", sep="")
-    write.csv(val.summary, name)
-    
-    
-    ##########################################################################
-    tv.sd = apply(tv.labels , 2, sd)
-    tv.mean = apply(tv.labels , 2, mean)
-    tv.median = apply(tv.labels , 2, median)
-    tv.sum = apply(tv.labels , 2, sum)
-    tv.max = apply(tv.labels , 2, max)
-    tv.min = apply(tv.labels , 2, min)
-    tv.quartis = apply(tv.labels, 2, quantile, 
-                       probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
-    tv.summary = rbind(sd = tv.sd, mean = tv.mean, 
-                       median = tv.median,
-                       sum = tv.sum, max = tv.max, 
-                       min = tv.min, tv.quartis)
-    name = paste(folderSave, "/summary-tv-", f, ".csv", sep="")
-    write.csv(tv.summary, name)
-    
-    
-    ##################################################################
-    treino.num.positive.instances = apply(treino.labels , 2, sum)
-    teste.num.positive.instances = apply(teste.labels , 2, sum)
-    val.num.positive.instances = apply(val.labels , 2, sum)
-    tv.num.positive.instances = apply(tv.labels , 2, sum)
-    
-    
-    ##################################################################
-    treino.num.instancias = nrow(treino)
-    treino.num.negative.instances = treino.num.instancias - treino.num.positive.instances 
-    
-    teste.num.instancias = nrow(teste)
-    teste.num.negative.instances = teste.num.instancias - teste.num.positive.instances 
-    
-    val.num.instancias = nrow(val)
-    val.num.negative.instances = val.num.instancias - val.num.positive.instances 
-    
-    tv.num.instancias = nrow(tv)
-    tv.num.negative.instances = tv.num.instancias - treino.num.positive.instances 
-    
-    todos = rbind(treino.num.positive.instances, treino.num.negative.instances,
-                  teste.num.positive.instances, teste.num.negative.instances,
-                  val.num.positive.instances, val.num.negative.instances,
-                  tv.num.positive.instances, tv.num.negative.instances)
-    
-    name = paste(folderSave, "/instances-pos-neg-", f, ".csv", sep="")
-    write.csv(todos, name)
-    
-    
-    ##########################################################################
-    treino.num.positive.instances = data.frame(treino.num.positive.instances)
-    treino.num.negative.instances = data.frame(treino.num.negative.instances)
-    
-    teste.num.positive.instances = data.frame(teste.num.positive.instances)
-    teste.num.negative.instances = data.frame(teste.num.negative.instances)
-    
-    val.num.positive.instances = data.frame(val.num.positive.instances)
-    val.num.negative.instances = data.frame(val.num.negative.instances)
-    
-    tv.num.positive.instances = data.frame(tv.num.positive.instances)
-    tv.num.negative.instances = data.frame(tv.num.negative.instances)
-    
-    ##################################################################
-    label = rownames(treino.num.positive.instances)
-    
-    ##################################################################
-    treino.num.positive.instances = data.frame(label , frequency = treino.num.positive.instances$treino.num.positive.instances)
-    treino.num.negative.instances = data.frame(label , frequency = treino.num.negative.instances$treino.num.negative.instances)
-    
-    teste.num.positive.instances = data.frame(label , frequency = teste.num.positive.instances$teste.num.positive.instances)
-    teste.num.negative.instances = data.frame(label , frequency = teste.num.negative.instances$teste.num.negative.instances)
-    
-    val.num.positive.instances = data.frame(label , frequency = val.num.positive.instances$val.num.positive.instances)
-    val.num.negative.instances = data.frame(label , frequency = val.num.negative.instances$val.num.negative.instances)
-    
-    tv.num.positive.instances = data.frame(label , frequency = tv.num.positive.instances$tv.num.positive.instances)
-    tv.num.negative.instances = data.frame(label , frequency = tv.num.negative.instances$tv.num.negative.instances)
-    
-    ##########################################################################
-    treino.num.positive.instances = arrange(treino.num.positive.instances, desc(frequency))
-    ultimo = nrow(treino.num.positive.instances)
-    treino.max = data.frame(treino.num.positive.instances[1,])
-    treino.min = data.frame(treino.num.positive.instances[ultimo,])
-    
-    teste.num.positive.instances = arrange(teste.num.positive.instances, desc(frequency))
-    ultimo = nrow(teste.num.positive.instances)
-    teste.max = data.frame(teste.num.positive.instances[1,])
-    teste.min = data.frame(teste.num.positive.instances[ultimo,])
-    
-    val.num.positive.instances = arrange(val.num.positive.instances, desc(frequency))
-    ultimo = nrow(val.num.positive.instances)
-    val.max = data.frame(val.num.positive.instances[1,])
-    val.min = data.frame(val.num.positive.instances[ultimo,])
-    
-    tv.num.positive.instances = arrange(tv.num.positive.instances, desc(frequency))
-    ultimo = nrow(tv.num.positive.instances)
-    tv.max = data.frame(tv.num.positive.instances[1,])
-    tv.min = data.frame(tv.num.positive.instances[ultimo,])
-    
-    max.min = rbind(treino.max, treino.min,
-                    teste.max, teste.min,
-                    val.max, val.min,
-                    tv.max, tv.min)
-    
-    set = c("train.max", "train.min",
-            "teste.max", "teste.min",
-            "val.max", "val.min",
-            "tv.max", "tv.min")
-    
-    final = data.frame(set, max.min)
-    
-    name = paste(folderSave, "/labels-max-min-", f, ".csv", sep="")
-    write.csv(final, name, row.names = FALSE)
-    
-    
-    ##########################################################################
-    labels.indices = seq(parameters$Dataset.Info$LabelStart, parameters$Dataset.Info$LabelEnd, by=1)
-    mldr.treino = mldr_from_dataframe(treino, labelIndices = labels.indices)
-    mldr.teste = mldr_from_dataframe(teste, labelIndices = labels.indices)
-    mldr.val = mldr_from_dataframe(val, labelIndices = labels.indices)
-    mldr.tv = mldr_from_dataframe(tv, labelIndices = labels.indices)
-    
-    
-    ##########################################################################
-    labelsets = data.frame(mldr.treino$labelsets)
-    names(labelsets) = c("labelset", "frequency")
-    name = paste(folderSave, "/labelsets-train-", f, ".csv", sep="")
-    write.csv(labelsets, name, row.names = FALSE)
-    
-    rm(labelsets)
-    labelsets = data.frame(mldr.teste$labelsets)
-    names(labelsets) = c("labelset", "frequency")
-    name = paste(folderSave, "/labelsets-test-", f, ".csv", sep="")
-    write.csv(labelsets, name, row.names = FALSE)
-    
-    rm(labelsets)
-    labelsets = data.frame(mldr.val$labelsets)
-    names(labelsets) = c("labelset", "frequency")
-    name = paste(folderSave, "/labelsets-val-", f, ".csv", sep="")
-    write.csv(labelsets, name, row.names = FALSE)
-    
-    rm(labelsets)
-    labelsets = data.frame(mldr.tv$labelsets)
-    names(labelsets) = c("labelset", "frequency")
-    name = paste(folderSave, "/labelsets-tv-", f, ".csv", sep="")
-    write.csv(labelsets, name, row.names = FALSE)
-    
-    
-    ##########################################################################
-    labels = data.frame(mldr.treino$labels)
-    name = paste(folderSave, "/labels-train-", f, ".csv", sep="")
-    write.csv(labels, name)
-    
-    rm(labels)
-    labels = data.frame(mldr.teste$labels)
-    name = paste(folderSave, "/labels-test-", f, ".csv", sep="")
-    write.csv(labels, name)
-    
-    rm(labels)
-    labels = data.frame(mldr.val$labels)
-    name = paste(folderSave, "/labels-val-", f, ".csv", sep="")
-    write.csv(labels, name)
-    
-    rm(labels)
-    labels = data.frame(mldr.tv$labels)
-    name = paste(folderSave, "/labels-tv-", f, ".csv", sep="")
-    write.csv(labels, name)
-    
-    
-    ##########################################################################  
-    properties = data.frame(mldr.treino$measures)
-    properties = cbind(fold = f, properties)
-    measures.treino = rbind(measures.treino, properties)
-    #name = paste(folderSave , "/properties-train-", f, ".csv", sep="")
-    #write.csv(properties , name, row.names = FALSE)
-    
-    rm(properties)
-    properties = data.frame(mldr.teste$measures)
-    properties = cbind(fold = f, properties)
-    measures.teste = rbind(measures.teste, properties)
-    #name = paste(folderSave , "/properties-test-", f, ".csv", sep="")
-    #write.csv(properties , name, row.names = FALSE)
-    
-    rm(properties)
-    properties = data.frame(mldr.val$measures)
-    properties = cbind(fold = f, properties)
-    measures.val = rbind(measures.val, properties)
-    #name = paste(folderSave , "/properties-val-", f, ".csv", sep="")
-    #write.csv(properties , name, row.names = FALSE)
-    
-    rm(properties)
-    properties = data.frame(mldr.tv$measures)
-    properties = cbind(fold = f, properties)
-    measures.tv = rbind(measures.tv, properties)
-    #name = paste(folderSave , "/properties-tv-", f, ".csv", sep="")
-    #write.csv(properties , name, row.names = FALSE)
-    
-    
-    ##########################################################################  
-    # name = paste(folderSave , "/plot-train-fold-", f, ".pdf", sep="")
-    # pdf(name, width = 10, height = 8)
-    # print(plot(mldr.treino))
-    # dev.off()
-    # cat("\n")
-    # 
-    # name = paste(folderSave , "/plot-test-fold-", f, ".pdf", sep="")
-    # pdf(name, width = 10, height = 8)
-    # print(plot(mldr.teste))
-    # dev.off()
-    # cat("\n")
-    # 
-    # name = paste(folderSave , "/plot-val-fold-", f, ".pdf", sep="")
-    # pdf(name, width = 10, height = 8)
-    # print(plot(mldr.val))
-    # dev.off()
-    # cat("\n")
-    # 
-    # name = paste(folderSave , "/plot-tv-fold-", f, ".pdf", sep="")
-    # pdf(name, width = 10, height = 8)
-    # print(plot(mldr.tv))
-    # dev.off()
-    # cat("\n")
-    
+  while(f<=parameters$Config$Number.Folds){
+    
+    best.fold = best[f,]
+    num.fold = best.fold$fold
+    num.part = best.fold$part
+    
+    Pasta = paste(parameters$Folders$folderPartitions, 
+                  "/", parameters$Config$Dataset.Name, "/Split-", 
+                  f, sep="")
+    pasta.groups = paste(Pasta, "/fold-", f, 
+                         "-groups-per-partition.csv", sep="")
+    clusters = data.frame(read.csv(pasta.groups))
+    groups.fold = data.frame(filter(clusters, partition == num.part))
+    
+    num.group = groups.fold$num.groups
+    best.part.info = rbind(best.part.info, 
+                           data.frame(num.fold, num.part, num.group))
+    
+    nome = paste(Pasta, "/Partition-", num.part, 
+                 "/partition-", num.part, ".csv", sep="")
+    partitions = data.frame(read.csv(nome))
+    partitions = data.frame(num.fold, num.part, partitions)
+    partitions = arrange(partitions, group)
+    
+    all.partitions.info = rbind(all.partitions.info, partitions)
+    
+    nome.2 = paste(Pasta, "/Partition-", num.part,
+                   "/fold-", f, "-labels-per-group-partition-", 
+                   num.group, ".csv", sep="")
+    labels = data.frame(read.csv(nome.2))
+    labels = data.frame(num.fold, labels)
+    all.total.labels = rbind(all.total.labels , labels)
     
     f = f + 1
     gc()
-  }
+  } # fim do fold
   
-  name = paste(folder , "/properties-tv.csv", sep="")
-  write.csv(measures.tv[-1,], name, row.names = FALSE)
+  setwd(parameters$Folders$folderTested)
+  write.csv(best.part.info, "best-part-info.csv", row.names = FALSE)
+  write.csv(all.partitions.info, "all.partitions.info.csv", row.names = FALSE)
+  write.csv(all.total.labels, "all.total.labels.csv", row.names = FALSE)
   
-  name = paste(folder , "/properties-test.csv", sep="")
-  write.csv(measures.teste[-1,], name, row.names = FALSE)
+  retorno$best.part.info = best.part.info[-1,]
+  retorno$all.partitions.info = all.partitions.info
+  retorno$all.total.labels = all.total.labels
+  return(retorno)
   
-  name = paste(folder , "/properties-train.csv", sep="")
-  write.csv(measures.treino[-1,], name, row.names = FALSE)
+}
+
+
+
+properties.clusters <- function(nomes.labels.clusters,
+                                fold,
+                                cluster,
+                                folderSave, 
+                                labels.indices, 
+                                train, 
+                                test, 
+                                val, 
+                                tv){
   
-  name = paste(folder , "/properties-val.csv", sep="")
-  write.csv(measures.val[-1,], name, row.names = FALSE)
+  ##################################################################
+  treino.labels = data.frame(train[,labels.indices])
+  colnames(treino.labels) = nomes.labels.clusters
+  
+  teste.labels = data.frame(test[,labels.indices])
+  colnames(teste.labels) = nomes.labels.clusters
+  
+  val.labels = data.frame(val[,labels.indices])
+  colnames(val.labels) = nomes.labels.clusters
+  
+  tv.labels = data.frame(tv[,labels.indices])
+  colnames(tv.labels) = nomes.labels.clusters
+  
+  
+  ##########################################################################
+  treino.sd = apply(treino.labels , 2, sd)
+  treino.mean = apply(treino.labels , 2, mean)
+  treino.median = apply(treino.labels , 2, median)
+  treino.sum = apply(treino.labels , 2, sum)
+  treino.max = apply(treino.labels , 2, max)
+  treino.min = apply(treino.labels , 2, min)
+  treino.quartis = apply(treino.labels, 2, quantile, 
+                         probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+  treino.summary = rbind(sd = treino.sd, mean = treino.mean, 
+                         median = treino.median,
+                         sum = treino.sum, max = treino.max, 
+                         min = treino.min, treino.quartis)
+  name = paste(folderSave, "/summary-train.csv", sep="")
+  write.csv(treino.summary, name)
+  
+  
+  ##########################################################################
+  teste.sd = apply(teste.labels , 2, sd)
+  teste.mean = apply(teste.labels , 2, mean)
+  teste.median = apply(teste.labels , 2, median)
+  teste.sum = apply(teste.labels , 2, sum)
+  teste.max = apply(teste.labels , 2, max)
+  teste.min = apply(teste.labels , 2, min)
+  teste.quartis = apply(teste.labels, 2, quantile,
+                        probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+  teste.summary = rbind(sd = teste.sd, mean = teste.mean, 
+                        median = teste.median,
+                        sum = teste.sum, max = teste.max, 
+                        min = teste.min, teste.quartis)
+  name = paste(folderSave, "/summary-test.csv", sep="")
+  write.csv(teste.summary, name)
+  
+  
+  ##########################################################################
+  val.sd = apply(val.labels , 2, sd)
+  val.mean = apply(val.labels , 2, mean)
+  val.median = apply(val.labels , 2, median)
+  val.sum = apply(val.labels , 2, sum)
+  val.max = apply(val.labels , 2, max)
+  val.min = apply(val.labels , 2, min)
+  val.quartis = apply(val.labels, 2, quantile, 
+                      probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+  val.summary = rbind(sd = val.sd, mean = val.mean, 
+                      median = val.median,
+                      sum = val.sum, max = val.max, 
+                      min = val.min, val.quartis)
+  name = paste(folderSave, "/summary-val.csv", sep="")
+  write.csv(val.summary, name)
+  
+  
+  ##########################################################################
+  tv.sd = apply(tv.labels , 2, sd)
+  tv.mean = apply(tv.labels , 2, mean)
+  tv.median = apply(tv.labels , 2, median)
+  tv.sum = apply(tv.labels , 2, sum)
+  tv.max = apply(tv.labels , 2, max)
+  tv.min = apply(tv.labels , 2, min)
+  tv.quartis = apply(tv.labels, 2, quantile, 
+                     probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+  tv.summary = rbind(sd = tv.sd, mean = tv.mean, 
+                     median = tv.median,
+                     sum = tv.sum, max = tv.max, 
+                     min = tv.min, tv.quartis)
+  name = paste(folderSave, "/summary-tv.csv", sep="")
+  write.csv(tv.summary, name)
+  
+  
+  ##################################################################
+  treino.num.positive.instances = apply(treino.labels , 2, sum)
+  teste.num.positive.instances = apply(teste.labels , 2, sum)
+  val.num.positive.instances = apply(val.labels , 2, sum)
+  tv.num.positive.instances = apply(tv.labels , 2, sum)
+  
+  
+  ##################################################################
+  treino.num.instancias = nrow(train)
+  treino.num.negative.instances = treino.num.instancias - treino.num.positive.instances 
+  
+  teste.num.instancias = nrow(test)
+  teste.num.negative.instances = teste.num.instancias - teste.num.positive.instances 
+  
+  val.num.instancias = nrow(val)
+  val.num.negative.instances = val.num.instancias - val.num.positive.instances 
+  
+  tv.num.instancias = nrow(tv)
+  tv.num.negative.instances = tv.num.instancias - treino.num.positive.instances 
+  
+  todos = rbind(treino.num.positive.instances, treino.num.negative.instances,
+                teste.num.positive.instances, teste.num.negative.instances,
+                val.num.positive.instances, val.num.negative.instances,
+                tv.num.positive.instances, tv.num.negative.instances)
+  
+  name = paste(folderSave, "/instances-pos-neg.csv", sep="")
+  write.csv(todos, name)
+  
+  
+  ##########################################################################
+  treino.num.positive.instances = data.frame(treino.num.positive.instances)
+  treino.num.negative.instances = data.frame(treino.num.negative.instances)
+  
+  teste.num.positive.instances = data.frame(teste.num.positive.instances)
+  teste.num.negative.instances = data.frame(teste.num.negative.instances)
+  
+  val.num.positive.instances = data.frame(val.num.positive.instances)
+  val.num.negative.instances = data.frame(val.num.negative.instances)
+  
+  tv.num.positive.instances = data.frame(tv.num.positive.instances)
+  tv.num.negative.instances = data.frame(tv.num.negative.instances)
+  
+  
+  ##################################################################
+  label = rownames(treino.num.positive.instances)
+  
+  ##################################################################
+  treino.num.positive.instances = data.frame(label , frequency = treino.num.positive.instances$treino.num.positive.instances)
+  treino.num.negative.instances = data.frame(label , frequency = treino.num.negative.instances$treino.num.negative.instances)
+  
+  teste.num.positive.instances = data.frame(label , frequency = teste.num.positive.instances$teste.num.positive.instances)
+  teste.num.negative.instances = data.frame(label , frequency = teste.num.negative.instances$teste.num.negative.instances)
+  
+  val.num.positive.instances = data.frame(label , frequency = val.num.positive.instances$val.num.positive.instances)
+  val.num.negative.instances = data.frame(label , frequency = val.num.negative.instances$val.num.negative.instances)
+  
+  tv.num.positive.instances = data.frame(label , frequency = tv.num.positive.instances$tv.num.positive.instances)
+  tv.num.negative.instances = data.frame(label , frequency = tv.num.negative.instances$tv.num.negative.instances)
+  
+  
+  ##########################################################################
+  treino.num.positive.instances = arrange(treino.num.positive.instances, desc(frequency))
+  ultimo = nrow(treino.num.positive.instances)
+  treino.max = data.frame(treino.num.positive.instances[1,])
+  treino.min = data.frame(treino.num.positive.instances[ultimo,])
+  
+  teste.num.positive.instances = arrange(teste.num.positive.instances, desc(frequency))
+  ultimo = nrow(teste.num.positive.instances)
+  teste.max = data.frame(teste.num.positive.instances[1,])
+  teste.min = data.frame(teste.num.positive.instances[ultimo,])
+  
+  val.num.positive.instances = arrange(val.num.positive.instances, desc(frequency))
+  ultimo = nrow(val.num.positive.instances)
+  val.max = data.frame(val.num.positive.instances[1,])
+  val.min = data.frame(val.num.positive.instances[ultimo,])
+  
+  tv.num.positive.instances = arrange(tv.num.positive.instances, desc(frequency))
+  ultimo = nrow(tv.num.positive.instances)
+  tv.max = data.frame(tv.num.positive.instances[1,])
+  tv.min = data.frame(tv.num.positive.instances[ultimo,])
+  
+  max.min = rbind(treino.max, treino.min,
+                  teste.max, teste.min,
+                  val.max, val.min,
+                  tv.max, tv.min)
+  
+  set = c("train.max", "train.min",
+          "teste.max", "teste.min",
+          "val.max", "val.min",
+          "tv.max", "tv.min")
+  
+  final = data.frame(set, max.min)
+  
+  name = paste(folderSave, "/labels-max-min.csv", sep="")
+  write.csv(final, name, row.names = FALSE)
+  
+  ##########################################################################
+  mldr.treino = mldr_from_dataframe(train, labelIndices = labels.indices)
+  mldr.teste = mldr_from_dataframe(test, labelIndices = labels.indices)
+  mldr.val = mldr_from_dataframe(val, labelIndices = labels.indices)
+  mldr.tv = mldr_from_dataframe(tv, labelIndices = labels.indices)
+  
+  
+  ##########################################################################
+  labelsets = data.frame(mldr.treino$labelsets)
+  names(labelsets) = c("labelset", "frequency")
+  name = paste(folderSave, "/labelsets-train.csv", sep="")
+  write.csv(labelsets, name, row.names = FALSE)
+  
+  rm(labelsets)
+  labelsets = data.frame(mldr.teste$labelsets)
+  names(labelsets) = c("labelset", "frequency")
+  name = paste(folderSave, "/labelsets-test.csv", sep="")
+  write.csv(labelsets, name, row.names = FALSE)
+  
+  rm(labelsets)
+  labelsets = data.frame(mldr.val$labelsets)
+  names(labelsets) = c("labelset", "frequency")
+  name = paste(folderSave, "/labelsets-val.csv", sep="")
+  write.csv(labelsets, name, row.names = FALSE)
+  
+  rm(labelsets)
+  labelsets = data.frame(mldr.tv$labelsets)
+  names(labelsets) = c("labelset", "frequency")
+  name = paste(folderSave, "/labelsets-tv.csv", sep="")
+  write.csv(labelsets, name, row.names = FALSE)
+  
+  
+  ##########################################################################
+  labels = data.frame(mldr.treino$labels)
+  name = paste(folderSave, "/labels-train.csv", sep="")
+  write.csv(labels, name)
+  
+  rm(labels)
+  labels = data.frame(mldr.teste$labels)
+  name = paste(folderSave, "/labels-test.csv", sep="")
+  write.csv(labels, name)
+  
+  rm(labels)
+  labels = data.frame(mldr.val$labels)
+  name = paste(folderSave, "/labels-val.csv", sep="")
+  write.csv(labels, name)
+  
+  rm(labels)
+  labels = data.frame(mldr.tv$labels)
+  name = paste(folderSave, "/labels-tv.csv", sep="")
+  write.csv(labels, name)
+  
+  
+  ##########################################################################  
+  properties = data.frame(mldr.treino$measures)
+  properties = cbind(fold, cluster, properties)
+  name = paste(folderSave , "/properties-train.csv", sep="")
+  write.csv(properties , name, row.names = FALSE)
+  
+  rm(properties)
+  properties = data.frame(mldr.teste$measures)
+  properties = cbind(fold, cluster, properties)
+  name = paste(folderSave , "/properties-test.csv", sep="")
+  write.csv(properties , name, row.names = FALSE)
+  
+  rm(properties)
+  properties = data.frame(mldr.val$measures)
+  properties = cbind(fold, cluster, properties)
+  name = paste(folderSave , "/properties-val.csv", sep="")
+  write.csv(properties , name, row.names = FALSE)
+  
+  rm(properties)
+  properties = data.frame(mldr.tv$measures)
+  properties = cbind(fold, cluster, properties)
+  name = paste(folderSave , "/properties-tv.csv", sep="")
+  write.csv(properties , name, row.names = FALSE)
+  
+  
+  ##########################################################################  
+  # name = paste(folderSave , "/plot-train-fold-", f, ".pdf", sep="")
+  # pdf(name, width = 10, height = 8)
+  # print(plot(mldr.treino))
+  # dev.off()
+  # cat("\n")
+  # 
+  # name = paste(folderSave , "/plot-test-fold-", f, ".pdf", sep="")
+  # pdf(name, width = 10, height = 8)
+  # print(plot(mldr.teste))
+  # dev.off()
+  # cat("\n")
+  # 
+  # name = paste(folderSave , "/plot-val-fold-", f, ".pdf", sep="")
+  # pdf(name, width = 10, height = 8)
+  # print(plot(mldr.val))
+  # dev.off()
+  # cat("\n")
+  # 
+  # name = paste(folderSave , "/plot-tv-fold-", f, ".pdf", sep="")
+  # pdf(name, width = 10, height = 8)
+  # print(plot(mldr.tv))
+  # dev.off()
+  # cat("\n")
   
   
 }
+
+
+
 
 
 roc.curva <- function(predictions, probabilities, test, Folder){
@@ -719,7 +863,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # PLOTANDO ROC CURVE
-  name = paste(Folder, "/roc-bin.pdf", sep="")
+  name = paste(Folder, "/roc-pred.pdf", sep="")
   pdf(name, width = 10, height = 8)
   print(plot(res.pred$roc, print.thres = 'all', print.auc=TRUE, 
              print.thres.cex=0.7, grid = TRUE, identity=TRUE,
@@ -744,9 +888,9 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   setwd(Folder)
-  write.csv(as.numeric(res.pred$roc$auc), "bin-auc.csv")
-  write.csv(as.numeric(res.pred$macro_auc), "bin-macro-auc.csv")
-  write.csv(as.numeric(res.pred$micro_auc), "bin-micro-auc.csv")
+  write.csv(as.numeric(res.pred$roc$auc), "pred-auc.csv")
+  write.csv(as.numeric(res.pred$macro_auc), "pred-macro-auc.csv")
+  write.csv(as.numeric(res.pred$micro_auc), "pred-micro-auc.csv")
   
   
   ###############################################################
@@ -817,7 +961,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS INFORMAÇÕES DO ROC SEPARADAMENTE
-  name = paste(Folder, "/roc-bin-1.txt", sep="")
+  name = paste(Folder, "/roc-pred-1.txt", sep="")
   output.file <- file(name, "wb")
   
   write(" ", file = output.file, append = TRUE)
@@ -877,7 +1021,7 @@ roc.curva <- function(predictions, probabilities, test, Folder){
   
   ###############################################################
   # SALVANDO AS OUTRAS INFORMAÇÕES
-  name = paste(Folder, "/roc-bin-2.txt", sep="")
+  name = paste(Folder, "/roc-pred-2.txt", sep="")
   sink(name, type = "output")
   print(res.pred$roc)
   cat("\n\n")

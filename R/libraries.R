@@ -1,5 +1,5 @@
 ##############################################################################
-# LOCAL PARTITIONS                                                           #
+# STANDARD HPML                                                              #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | Dr. Felipe Nakano Kenji                #
+# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
+# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
 #                                                                            #
 # Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
 # Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
@@ -26,23 +26,27 @@
 ##############################################################################
 
 
+##################################################
+# SET WORK SPACE
+##################################################
+FolderRoot = "~/Standard-HPML"
+FolderScripts = "~/Standard-HPML/R"
 
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
-FolderRoot = "~/Local-Partitions"
-FolderScripts = "~/Local-Partitions/R"
 
-library("foreign", quietly = TRUE) 
-library("stringr", quietly = TRUE) 
-library("parallel", quietly = TRUE) 
-library("rJava", quietly = TRUE) 
-library("RWeka", quietly = TRUE) 
+library("foreign", quietly = TRUE)
+library("AggregateR", quietly = TRUE)
+library("dplyr", quietly = TRUE)
+library("stringr", quietly = TRUE)
+library("foreach", quietly = TRUE)
+library("doParallel", quietly = TRUE)
+library("parallel", quietly = TRUE)
+library("rJava", quietly = TRUE)
+library("RWeka", quietly = TRUE)
+library("mldr", quietly = TRUE)
 library("utiml", quietly = TRUE)
-library("mldr", quietly = TRUE) 
-library("foreach", quietly = TRUE) 
-library("doParallel", quietly = TRUE) 
-library(tidyverse)
+library("multiROC", quietly = TRUE)
+
+
 
 ##################################################################################################
 # Please, any errors, contact us: elainececiliagatto@gmail.com                                   #
