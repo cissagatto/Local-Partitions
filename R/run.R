@@ -266,6 +266,12 @@ executeLP <- function(ds,
     setwd(FolderScripts)
     source("local-python.R")
     
+    # str0 = "~/Local-Partitions/Reports"
+    # if(dir.exists(str0)==FALSE){dir.create(str0)}
+    # 
+    # str1 = paste(str0, "/python", sep="")
+    # if(dir.exists(str1)==FALSE){dir.create(str1)}
+    
     cat("\n\n#########################################################")
     cat("\n# RUN LOCAL: Execute PYTHON                             #")
     cat("\n#########################################################\n\n")

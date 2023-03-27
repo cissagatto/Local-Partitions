@@ -88,7 +88,7 @@ args <- commandArgs(TRUE)
 ###############################################################################
 
 
-# config_file = "/home/biomal/Local-Partitions/config-files-laptop/rf/lrf-GpositiveGO.csv"
+# config_file = "/home/biomal~/Local-Partitions/config-files-laptop/rf/lrf-GpositiveGO.csv"
 
 
 config_file <- args[1]

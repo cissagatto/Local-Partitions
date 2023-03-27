@@ -106,9 +106,6 @@ execute.python <- function(ds,
     ##########################################################################
     mldr.teste = mldr_from_dataframe(arquivo_ts, labelIndices = labels.indices)
     
-    ##########################################################################
-    nomes.rotulos = colnames(arquivo_vl[,ds$LabelStart:ds$LabelEnd])
-    
     
     ########################################################################################
     cat("\n\tJoin validation and train")
@@ -133,7 +130,7 @@ execute.python <- function(ds,
     # /home/biomal~/Local-Partitions/Utils/br-python
     str.execute = paste("python3 ", 
                         diretorios$folderUtils,
-                        "/random-forests-2.py ", 
+                        "/main.py ", 
                         nome_arq_tr, " ",
                         nome_arq_vl,  " ",
                         nome_arq_ts, " ", 
@@ -156,59 +153,39 @@ execute.python <- function(ds,
     y_trues = data.frame(read.csv("y_true.csv"))
     y_probas = data.frame(read.csv("y_proba.csv"))     
     
-    #####################################################################
-    nomes = colnames(y_probas)
-    
-    nomes.2 = c("")
-    m = ncol(y_probas)/2
-    a = 1
-    while(a<=m){
-      nomes.2[a] = paste("prob_", a-1, "_1", sep="")
-      a = a + 1
-    }
-    
-    probabilidades = y_probas %>% select(all_of(nomes.2))
-    names(probabilidades) = colnames(y_trues)
-    write.csv(probabilidades, "y_proba_1.csv", row.names = FALSE)
-    
     
     #####################################################################
-    cat("\n\tUTIML Threshold\n")
-    y_preds_2 <- data.frame(as.matrix(fixed_threshold(probabilidades, 
-                                                      threshold = 0.5)))
-    
-    setwd(folderSplit)
-    write.csv(y_preds_2, "y_predict.csv", row.names = FALSE)
+    nomes.rotulos = colnames(y_trues)
+    names(y_probas) = nomes.rotulos
     
     
     #####################################################################
     cat("\nPlot ROC curve")
-    roc.curva(predictions = y_preds_2,
-              probabilities = probabilidades,
+    roc.curva(predictions = y_preds,
+              probabilities = y_probas,
               test = mldr.teste,
               Folder = folderSplit)
-    
     
     ##############################################
     cat("\nInformações das predições")
     predictions.information(nomes.rotulos=nomes.rotulos, 
-                            proba = probabilidades, 
-                            preds = y_preds_2, 
+                            proba = y_probas, 
+                            preds = y_preds, 
                             trues = y_trues, 
                             folder = folderSplit)
     
     #####################################################################
     cat("\nSave original and pruned predictions")
-    pred.o = paste(names.labels, "-pred", sep="")
-    names(y_preds_2) = pred.o
+    pred.o = paste(colnames(y_preds), "-pred", sep="")
+    names(y_preds) = pred.o
     
-    true.labels = paste(names.labels, "-true", sep="")
+    true.labels = paste(colnames(y_trues), "-true", sep="")
     names(y_trues) = true.labels
     
-    proba = paste(names.labels, "-proba", sep="")
-    names(probabilidades) = proba
+    proba = paste(colnames(y_probas), "-proba", sep="")
+    names(y_probas) = proba
     
-    all.predictions = cbind(probabilidades, y_preds_2, y_trues)
+    all.predictions = cbind(y_probas, y_preds, y_trues)
     
     setwd(folderSplit)
     write.csv(all.predictions, "folder-predictions.csv", row.names = FALSE)
@@ -269,7 +246,7 @@ evaluate.python <- function(ds, dataset_name, number_folds, folderResults){
     ####################################################################################
     cat("\nAbrindo pred and true")
     setwd(folderSplit)
-    y_pred = data.frame(read.csv("y_predict.csv"))
+    y_pred = data.frame(read.csv("y_pred.csv"))
     y_true = data.frame(read.csv("y_true.csv"))
     
     cat("\nConvertendo em numerico")
@@ -384,7 +361,10 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
     confMat = data.frame(read.csv(paste(folderSplit, "/ResConfMat.csv", sep="")))
     names(confMat) = c("Measures", "Fold")
     confMatFinal = cbind(confMatFinal, confMat$Fold) 
-    folds[f] = paste("Fold-", f, sep="")        
+    folds[f] = paste("Fold-", f, sep="")
+    setwd(folderSplit)
+    unlink("y_predict.csv", recursive = TRUE)
+    unlink("y_true.csv", recursive = TRUE)
     
     setwd(folderSplit)
     
@@ -405,15 +385,15 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
     final.proba.ma.mi.auc = rbind(final.proba.ma.mi.auc, proba.ma.mi.auc)
     
     ##################
-    pred.auc = data.frame(read.csv("bin-auc.csv"))
+    pred.auc = data.frame(read.csv("pred-auc.csv"))
     names(pred.auc) = c("fold", "value")
     final.pred.auc = rbind(final.pred.auc, pred.auc)
     
-    pred.micro.auc = data.frame(read.csv("bin-micro-auc.csv"))
+    pred.micro.auc = data.frame(read.csv("pred-micro-auc.csv"))
     names(pred.micro.auc) = c("fold", "value")
     final.pred.micro.auc = rbind(final.pred.micro.auc, pred.micro.auc)
     
-    pred.macro.auc = data.frame(read.csv("bin-macro-auc.csv"))
+    pred.macro.auc = data.frame(read.csv("pred-macro-auc.csv"))
     names(pred.macro.auc) = c("fold", "value")
     final.pred.macro.auc = rbind(final.pred.macro.auc, pred.macro.auc)
     
@@ -458,9 +438,9 @@ gather.python <- function(ds, dataset_name, number_folds, folderResults){
   final.pred.macro.auc = data.frame(fold, macro.auc = final.pred.macro.auc$value)
   
   setwd(diretorios$folderLocal)
-  write.csv(final.pred.auc, "bin-auc.csv", row.names = FALSE)  
-  write.csv(final.pred.macro.auc, "bin-macro-auc.csv", row.names = FALSE)  
-  write.csv(final.pred.micro.auc, "bin-micro-auc.csv", row.names = FALSE)
+  write.csv(final.pred.auc, "pred-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.macro.auc, "pred-macro-auc.csv", row.names = FALSE)  
+  write.csv(final.pred.micro.auc, "pred-micro-auc.csv", row.names = FALSE)
   
   
   #######################
