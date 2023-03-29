@@ -1,5 +1,5 @@
 ##############################################################################
-# STANDARD HPML                                                              #
+# LOCAL PARTITIONS                                                           #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -10,218 +10,126 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
-# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
+# 1 - PhD Elaine Cecilia Gatto | Prof PhD Ricardo Cerri                      #
+# 2 - Prof PhD Mauri Ferrandin                                               #
+# 3 - Prof PhD Celine Vens | PhD Felipe Nakano Kenji                         #
+# 4 - Prof PhD Jesse Read                                                    #
 #                                                                            #
-# Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
-# Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
+# 1 = Federal University of São Carlos - UFSCar - https://www2.ufscar.br     #
+# Campus São Carlos | Computer Department - DC - https://site.dc.ufscar.br | #
 # Post Graduate Program in Computer Science - PPGCC                          # 
-# http://ppgcc.dc.ufscar.br - Bioinformatics and Machine Learning Group      #
-# BIOMAL - http://www.biomal.ufscar.br                                       #
+# http://ppgcc.dc.ufscar.br | Bioinformatics and Machine Learning Group      #
+# BIOMAL - http://www.biomal.ufscar.br                                       # 
 #                                                                            #
-# Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium               #
+# 2 - Federal University of Santa Catarina Campus Blumenau - UFSC            #
+# https://ufsc.br/                                                           #
+#                                                                            #
+# 3 - Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium           #
 # Medicine Department - https://kulak.kuleuven.be/                           #
 # https://kulak.kuleuven.be/nl/over_kulak/faculteiten/geneeskunde            #
 #                                                                            #
+# 4 - Ecole Polytechnique | Institut Polytechnique de Paris | 1 rue Honoré   #
+# d’Estienne d’Orves - 91120 - Palaiseau - FRANCE                            #
+#                                                                            #
 ##############################################################################
 
 
-##################################################
-# SET WORK SPACE
-##################################################
-FolderRoot = "~/Standard-HPML"
-FolderScripts = "~/Standard-HPML/R"
+###############################################################################
+# SET WORKSAPCE                                                               #
+###############################################################################
+FolderRoot = "~/Local-Partitions"
+FolderScripts = "~/Local-Partitions/R"
 
 
-##############################################################################
-# 
-##############################################################################
-execute.run.rf <- function(parameters){
+###########################################################################
+#
+###########################################################################
+run.rf <- function(parameters){
   
-  FolderRoot = "~/Standard-HPML"
-  FolderScripts = "~/Standard-HPML/R"
+  FolderRoot = "~/Local-Partitions"
+  FolderScripts = "~/Local-Partitions/R"
   
   setwd(FolderScripts)
-  source("libraries.R")
+  source("local-rf.R")
   
-  setwd(FolderScripts)
-  source("test-rf-silho.R")
-  
-  if(parameters$Config$Number.Cores == 0){
+  if(parameters$Config.File$Number.Cores == 0){
     
-    cat("\n\n########################################################")
-      cat("\n# Zero is a disallowed value for number_cores. Please  #")
-      cat("\n# choose a value greater than or equal to 1.           #")
-      cat("\n########################################################\n\n")
+    cat("\n\n##########################################################")
+    cat("\n# Zero is a disallowed value for number_cores. Please      #")
+    cat("\n# choose a value greater than or equal to 1.               #")
+    cat("\n############################################################\n\n")
     
   } else {
     
-    cl <- parallel::makeCluster(parameters$Config$Number.Cores)
+    cl <- parallel::makeCluster(parameters$Config.File$Number.Cores)
     doParallel::registerDoParallel(cl)
     print(cl)
     
-    if(number_cores==1){
-      cat("\n\n######################################################")
-        cat("\n# Running Sequentially!                              #")
-        cat("\n######################################################\n\n")
+    if(parameters$Config.File$Number.Cores==1){
+      cat("\n\n########################################################")
+      cat("\n# Running Sequentially!                                #")
+      cat("\n########################################################\n\n")
     } else {
-      cat("\n\n#############################################################################")
-        cat("\n# Running in parallel with ", parameters$Config$Number.Cores, " cores! #")
-        cat("\n#############################################################################\n\n")
+      cat("\n\n############################################################")
+      cat("\n# Running in parallel with ", parameters$Config.File$Number.Cores, " cores! #")
+      cat("\n############################################################\n\n")
     }
   }
+  
+  
   cl = cl
   
-  cat("\n\n#######################################################")
-    cat("\n# RUN RF: Get labels                                  #")
-    cat("\n#######################################################\n\n")
-  arquivo = paste(parameters$Folders$folderNamesLabels, "/" ,
-                  dataset_name, "-NamesLabels.csv", sep="")
-  namesLabels = data.frame(read.csv(arquivo))
-  colnames(namesLabels) = c("id", "labels")
-  namesLabels = c(namesLabels$labels)
-  parameters$Config$NamesLabels = namesLabels
+  retorno = list()
   
   
-  cat("\n\n#######################################################")
-    cat("\n# RUN RF: Get the label space                         #")
-    cat("\n#######################################################\n\n")
-  timeLabelSpace = system.time(resLS <- labelSpace(parameters))
-  parameters$LabelSpace = resLS
+  cat("\n\n##################################################")
+    cat("\n# RUN: Names Labels                              #")
+    cat("\n##################################################\n\n")
+  name.file = paste(parameters$Directories$FolderNamesLabels, "/",
+                    parameters$Config.File$Dataset.Name,
+                    "-NamesLabels.csv", sep="")
+  labels.names = data.frame(read.csv(name.file))
+  names(labels.names) = c("Index", "Labels")
+  parameters$Names.Labels = labels.names
   
   
-  cat("\n\n#################################################")
-    cat("\n# RUN RF: Get all partitions                    #")
-    cat("\n#################################################\n\n")
-  timeAllPartitions = system.time(resAP <- get.all.partitions(parameters))
-  parameters$All.Partitions = resAP
   
-  
-  if(parameters$Config$Criteria=="maf1"){
-    
-    cat("\n\n######################################################")
-      cat("\n# RUN RF MACRO-F1: Build and Test Partitions         #")
-      cat("\n######################################################\n\n")
-    timeBuild = system.time(resBuild <- build.rf.maf1(parameters))
-    
-    
-    cat("\n\n#######################################################")
-      cat("\n# RUN RF MACRO-F1: Matrix Confusion                   #")
-      cat("\n#######################################################\n\n")
-    timePreds = system.time(resGather <- gather.preds.rf.maf1(parameters))
-    
-    
-    cat("\n\n########################################################")
-      cat("\n# RUN RF MACRO-F1: Evaluation                          #")
-      cat("\n########################################################\n\n")
-    timeEvaluate = system.time(resEval <- evaluate.rf.maf1(parameters))
-    
-    
-    cat("\n\n########################################################")
-      cat("\n# RUN RF MACRO-F1: Mean 10 Folds                       #")
-      cat("\n########################################################\n\n")
-    timeGather = system.time(resGE <- gather.eval.rf.maf1(parameters))
-    
-    
-    cat("\n\n#######################################################")
-      cat("\n# RUN RF MACRO-F1: Save Runtime                       #")
-      cat("\n#######################################################\n\n")
-    timesExecute = rbind(timeAllPartitions, timeLabelSpace, 
-                         timeBuild, timePreds,
-                         timeEvaluate, timeGather)
-    setwd(parameters$Folders$folderTested)
-    write.csv(timesExecute, "Run-Time-RF-Maf1.csv")
-    
-    
-  } else if(parameters$Config$Criteria=="mif1"){
-    
-    cat("\n\n########################################################")
-       cat("\n# RUN RF MICRO-F1: Build and Test Partitions          #")
-       cat("\n#######################################################\n\n")
-    timeBuild = system.time(resBuild <- build.rf.mif1(parameters))
-    
-    
-    cat("\n\n######################################################")
-      cat("\n# RUN RFR MICRO-F1: Matrix Confusion                 #")
-      cat("\n######################################################\n\n")
-    timePreds = system.time(resGather <- gather.preds.rf.mif1(parameters))
-    
-    
-    cat("\n\n########################################################")
-      cat("\n# RUN RF MICRO-F1: Evaluation                          #")
-      cat("\n########################################################\n\n")
-    timeEvaluate = system.time(resEval <- evaluate.rf.mif1(parameters))
-    
-    
-    cat("\n\n########################################################")
-      cat("\n# RUN RF MICRO-F1: Mean 10 Folds                       #")
-      cat("\n########################################################\n\n")
-    timeGather = system.time(resGE <- gather.eval.rf.mif1(parameters))
-    
-    
-    cat("\n\n#####################################################")
-      cat("\n# RUN RF MICRO-F1: Save Runtime                     #")
-      cat("\n#####################################################\n\n")
-    timesExecute = rbind(timeAllPartitions, timeLabelSpace, 
-                         timeBuild, timePreds,
-                         timeEvaluate, timeGather)
-    setwd(parameters$Folders$folderTested)
-    write.csv(timesExecute, "Run-Time-RF-Mif1.csv")
-    
-    
-    
-  } else {
-    
-    cat("\n\n#####################################################")
-      cat("\n# RUN RF SILHOUETTE: Build and Test Partitions      #")
-      cat("\n######################################################\n\n")
-    timeBuild = system.time(resBuild <- build.rf.silho(parameters))
-    
-    
-    cat("\n\n######################################################")
-      cat("\n# RUN RF SILHOUETTE: Matrix Confusion                #")
-      cat("\n######################################################\n\n")
-    timePreds = system.time(resGather <- gather.preds.rf.silho(parameters))
-    
-    
-    cat("\n\n######################################################")
-      cat("\n# RUN RF SILHOUETTE: Evaluation                      #")
-      cat("\n######################################################\n\n")
-    timeEvaluate = system.time(resEval <- evaluate.rf.silho(parameters))
-    
-    
-    cat("\n\n######################################################")
-      cat("\n# RUN RF SILHOUETTE: Mean 10 Folds                   #")
-      cat("\n######################################################\n\n")
-    timeGather = system.time(resGE <- gather.eval.rf.silho(parameters))
-    
-    
-    cat("\n\n#####################################################")
-      cat("\n# RUN RF SILHOUETTE: Save Runtime                   #")
-      cat("\n#####################################################\n\n")
-    timesExecute = rbind(timeAllPartitions, timeLabelSpace, 
-                         timeBuild, timePreds,
-                         timeEvaluate, timeGather)
-    setwd(parameters$Folders$folderTested)
-    write.csv(timesExecute, "Run-Time-RF-Silho.csv")
-    
-  }
+  cat("\n\n####################################################")
+    cat("\n# RUN: Execute Random Forests                      #")
+    cat("\n####################################################\n\n")
+  time.execute = system.time(execute.local.python(parameters))
   
   
   cat("\n\n##########################################################")
-  cat("\n# RUN: Stop Parallel                                     #")
+  cat("\n# RUN: Evaluate                                          #")
   cat("\n##########################################################\n\n")
+  time.evaluate = system.time(evaluate.local.python(parameters))
+  
+  
+  cat("\n\n##########################################################")
+    cat("\n# RUN: Gather Evaluated Measures                         #")
+    cat("\n##########################################################\n\n")
+  time.gather.evaluate = system.time(gather.eval.local.python(parameters))
+  
+  
+  cat("\n\n###########################################################")
+    cat("\n# RUN: Save Runtime                                       #")
+    cat("\n###########################################################\n\n")
+  RunTimeGlobal = rbind(time.execute, time.evaluate, 
+                        time.gather.evaluate)
+  setwd(parameters$Directories$FolderLocal)
+  write.csv(RunTimeGlobal, "Run-RunTime.csv")
+  
+  
+  cat("\n\n###########################################################")
+    cat("\n# RUN: Stop Parallel                                      #")
+    cat("\n###########################################################\n\n")
   parallel::stopCluster(cl) 	
-  
-  cat("\n\n##########################################################")
-  cat("\n# RUN: END                                               #")
-  cat("\n##########################################################\n\n")
-  gc()
-  
   
 }
 
-##################################################################################################
-# Please, any errors, contact us: elainececiliagatto@gmail.com                                   #
-# Thank you very much!                                                                           #
-##################################################################################################
+
+###############################################################################
+# Please, any errors, contact us: elainececiliagatto@gmail.com                #
+# Thank you very much!                                                        #
+###############################################################################

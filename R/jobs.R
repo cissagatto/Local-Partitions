@@ -1,7 +1,10 @@
+
+# clean
 rm(list=ls())
 
+
 ##############################################################################
-# GLOBAL PARTITIONS                                                          #
+# Local PARTITIONS                                                          #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -12,26 +15,36 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri           #
-# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
+# 1 - PhD Elaine Cecilia Gatto | Prof PhD Ricardo Cerri                      #
+# 2 - Prof PhD Mauri Ferrandin                                               #
+# 3 - Prof PhD Celine Vens | PhD Felipe Nakano Kenji                         #
+# 4 - Prof PhD Jesse Read                                                    #
 #                                                                            #
-# Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
-# Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
+# 1 = Federal University of São Carlos - UFSCar - https://www2.ufscar.br     #
+# Campus São Carlos | Computer Department - DC - https://site.dc.ufscar.br | #
 # Post Graduate Program in Computer Science - PPGCC                          # 
-# http://ppgcc.dc.ufscar.br - Bioinformatics and Machine Learning Group      #
-# BIOMAL - http://www.biomal.ufscar.br                                       #
+# http://ppgcc.dc.ufscar.br | Bioinformatics and Machine Learning Group      #
+# BIOMAL - http://www.biomal.ufscar.br                                       # 
 #                                                                            #
-# Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium               #
+# 2 - Federal University of Santa Catarina Campus Blumenau - UFSC            #
+# https://ufsc.br/                                                           #
+#                                                                            #
+# 3 - Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium           #
 # Medicine Department - https://kulak.kuleuven.be/                           #
 # https://kulak.kuleuven.be/nl/over_kulak/faculteiten/geneeskunde            #
 #                                                                            #
+# 4 - Ecole Polytechnique | Institut Polytechnique de Paris | 1 rue Honoré   #
+# d’Estienne d’Orves - 91120 - Palaiseau - FRANCE                            #
+#                                                                            #
 ##############################################################################
 
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
+
+cat("\n################################")
+cat("\n# Set Work Space               #")
+cat("\n###############################\n\n")
 FolderRoot = "~/Local-Partitions"
 FolderScripts = "~/Local-Partitions/R"
+
 
 
 ###############################################################################
@@ -53,7 +66,7 @@ n = nrow(datasets)
 FolderJob = paste(FolderRoot, "/jobs", sep = "")
 if (dir.exists(FolderJob) == FALSE) {dir.create(FolderJob)}
 
-FolderCF = "~/Local-Partitions/config-files-ufscar"
+FolderCF = "/Local-Partitions/config-files-apptainer"
 
 
 ###############################################################################
@@ -95,7 +108,7 @@ while(w<=length(pacote)){
     # Confi File Name - "eg-3s-bbc1000.csv"
     config.file.name = paste(FolderCa, "/", name, ".csv", sep="")
     
-    # sh file name - "~/Global-Partitions/jobs/utiml/eg-3s-bbc1000.sh
+    # sh file name - "~/Local-Partitions/jobs/utiml/eg-3s-bbc1000.sh
     sh.name = paste(FolderPa, "/", name, ".sh", sep = "")
     
     # start writing
@@ -162,7 +175,7 @@ while(w<=length(pacote)){
     write("", file = output.file, append = TRUE)
     write("echo =============================================================", 
           file = output.file, append = TRUE)
-    str.5 = paste("echo SBATCH: RUNNING LOCAL PARTITIONS FOR ",
+    str.5 = paste("echo SBATCH: RUNNING Local PARTITIONS FOR ",
                   name, sep="")
     write(str.5, file = output.file, append = TRUE)
     write("echo =============================================================", 
@@ -202,7 +215,7 @@ while(w<=length(pacote)){
     
     
     # write("echo RUNNING", file = output.file, append = TRUE)
-    # str.12 = paste("Rscript /home/u704616/Global-ECC/R/global.R ", 
+    # str.12 = paste("Rscript /home/u704616/Local-ECC/R/Local.R ", 
     #              config_name, sep = "")
     # write(str.12, file = output.file, append = TRUE)
     # write(" ", file = output.file, append = TRUE)
@@ -239,7 +252,7 @@ while(w<=length(pacote)){
     
     write("", file = output.file, append = TRUE)
     write("echo COPYING SINGULARITY", file = output.file, append = TRUE)
-    str.30 = paste("cp /home/u704616/Experimentos-3.sif ", temp.name, sep ="")
+    str.30 = paste("cp /home/u704616/Experimentos-5b.sif ", temp.name, sep ="")
     write(str.30 , file = output.file, append = TRUE)
     
     
@@ -313,21 +326,21 @@ while(w<=length(pacote)){
     write(" ", file = output.file, append = TRUE)
     write("echo INICIALIZANDO O SINGULARITY", file = output.file, append = TRUE)
     str = paste("singularity instance start --bind ~/.config/rclone/:/root/.config/rclone ", 
-                temp.name, "/Experimentos-3.sif EXPL", a, sep="")
+                temp.name, "/Experimentos-5b.sif EXPG", a, sep="")
     write(str, file = output.file, append = TRUE)
     
     
     write(" ", file = output.file, append = TRUE)
     write("echo EXECUTANDO", file = output.file, append = TRUE)
-    str = paste("singularity run --app Rscript instance://EXPL", a,
-                " ~/Local-Partitions/R/local.R \"",
+    str = paste("singularity run --app Rscript instance://EXPG", a,
+                " /Local-Partitions/R/Local.R \"",
                 config.file.name, "\"", sep="")
     write(str, file = output.file, append = TRUE)
     
     
     write(" ", file = output.file, append = TRUE)
     write("echo STOP INSTANCIA", file = output.file, append = TRUE)
-    str = paste("singularity instance stop EXPL", a, sep="")
+    str = paste("singularity instance stop EXPG", a, sep="")
     write(str,file = output.file, append = TRUE)
     
     

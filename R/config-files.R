@@ -1,7 +1,9 @@
+# clean
 rm(list=ls())
 
+
 ##############################################################################
-# LOCAL PARTITIONS                                                           #
+# Local PARTITIONS                                                          #
 # Copyright (C) 2023                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
@@ -12,32 +14,41 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# PhD Elaine Cecilia Gatto | Prof. Dr. Ricardo Cerri | Prof. Dr. Mauri       #
-# Ferrandin | Prof. Dr. Celine Vens | PhD Felipe Nakano Kenji                #
+# 1 - PhD Elaine Cecilia Gatto | Prof PhD Ricardo Cerri                      #
+# 2 - Prof PhD Mauri Ferrandin                                               #
+# 3 - Prof PhD Celine Vens | PhD Felipe Nakano Kenji                         #
+# 4 - Prof PhD Jesse Read                                                    #
 #                                                                            #
-# Federal University of São Carlos - UFSCar - https://www2.ufscar.br         #
-# Campus São Carlos - Computer Department - DC - https://site.dc.ufscar.br   #
+# 1 = Federal University of São Carlos - UFSCar - https://www2.ufscar.br     #
+# Campus São Carlos | Computer Department - DC - https://site.dc.ufscar.br | #
 # Post Graduate Program in Computer Science - PPGCC                          # 
-# http://ppgcc.dc.ufscar.br - Bioinformatics and Machine Learning Group      #
-# BIOMAL - http://www.biomal.ufscar.br                                       #
+# http://ppgcc.dc.ufscar.br | Bioinformatics and Machine Learning Group      #
+# BIOMAL - http://www.biomal.ufscar.br                                       # 
 #                                                                            #
-# Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium               #
+# 2 - Federal University of Santa Catarina Campus Blumenau - UFSC            #
+# https://ufsc.br/                                                           #
+#                                                                            #
+# 3 - Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium           #
 # Medicine Department - https://kulak.kuleuven.be/                           #
 # https://kulak.kuleuven.be/nl/over_kulak/faculteiten/geneeskunde            #
+#                                                                            #
+# 4 - Ecole Polytechnique | Institut Polytechnique de Paris | 1 rue Honoré   #
+# d’Estienne d’Orves - 91120 - Palaiseau - FRANCE                            #
 #                                                                            #
 ##############################################################################
 
 
-
-###############################################################################
-# SET WORKSAPCE                                                               #
-###############################################################################
+cat("\n################################")
+cat("\n# Set Work Space               #")
+cat("\n###############################\n\n")
 FolderRoot = "~/Local-Partitions"
 FolderScripts = "~/Local-Partitions/R"
 
 
+
+
 ###############################################################################
-# LOAD LIBRARY/Implementation                                                        #
+# LOAD LIBRARY/PACKAGE                                                        #
 ###############################################################################
 library(stringr)
 
@@ -53,30 +64,25 @@ n = nrow(datasets)
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-FolderCF = paste(FolderRoot, "/config-files-biomal", sep="")
+FolderCF = paste(FolderRoot, "/config-files-apptainer", sep="")
 if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 
 
 ###############################################################################
-# CREATING FOLDER TO SAVE CONFIG FILES                                        #
+# QUAL Implementation USAR
 ###############################################################################
 Implementation.1 = c("rf")
 Implementation.2 = c("rf")
 
 
-j = 1
-while(j<=length(Implementation.1)){
+###############################################################################
+# CREATING CONFIG FILES FOR EACH DATASET                                      #
+###############################################################################
+w = 1
+while(w<=length(Implementation.1)){
   
-  ###############################################################################
-  # CREATING FOLDER TO SAVE CONFIG FILES                                        #
-  ###############################################################################
-  FolderClassifier = paste(FolderCF, "/", Implementation.1[j], sep="")
-  if(dir.exists(FolderClassifier)==FALSE){dir.create(FolderClassifier)}
-
-  
-  cat("\n\n==================================")
-  cat("\n Classificador:", Implementation.1[j])
-  cat("\n==================================\n\n")
+  FolderPa = paste(FolderCF, "/", Implementation.1[w], sep="")
+  if(dir.exists(FolderPa)==FALSE){dir.create(FolderPa)}
   
   i = 1
   while(i<=n){
@@ -85,61 +91,63 @@ while(j<=length(Implementation.1)){
     ds = datasets[i,]
     
     # print the dataset name
-    cat("\n\tdataset = ", ds$Name)
+    cat("\n================================================")
+    cat("\n\tDataset:", ds$Name)
+    cat("\n\tPackge:", Implementation.1[w])
     
     # Confi File Name
-    file_name = paste(FolderClassifier, "/l", Implementation.2[j], "-", 
+    # "~/Local-Partitions/config-files/utiml/eg-3s-bbc1000.csv"
+    file_name = paste(FolderPa, "/l", Implementation.2[w], "-",
                       ds$Name, ".csv", sep="")
     
     # Starts building the configuration file
     output.file <- file(file_name, "wb")
     
     # Config file table header
-    write("Config, Value",
-          file = output.file, append = TRUE)
+    write("Config, Value", file = output.file, append = TRUE)
     
-    # Absolute path to the folder where the dataset's "tar.gz" is stored
-    
-    # write("Dataset_Path, /Datasets/", 
-    #     file = output.file, append = TRUE)
-    
-     write("Dataset_Path, /home/elaine/Datasets/", 
-          file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, /home/biomal/Datasets/", 
+    # write("Dataset_Path, /home/elaine/Datasets", 
     #      file = output.file, append = TRUE)
     
-    # job name
-    job_name = paste("l", Implementation.2[j], "-", ds$Name,sep = "")
+    # write("Dataset_Path, /home/u704616/Datasets", 
+    #      file = output.file, append = TRUE)
     
-    # directory name
-    # folder_name = paste("/scratch/", job_name, sep = "")
-    # folder_name = paste("/tmp/", job_name, sep = "")
-    folder_name = paste("/dev/shm/", job_name, sep = "")
+    # write("Dataset_Path, /home/biomal/Datasets", 
+    #          file = output.file, append = TRUE)
+    
+     write("Dataset_Path, /Datasets", 
+          file = output.file, append = TRUE)
+    
+    name = paste("l", Implementation.2[w], "-", ds$Name, sep = "")
+    
+    # directory name - "/scratch/eg-3s-bbc1000"
+    temp.name = paste("/tmp/", name, sep = "")
+    # temp.name = paste("/dev/shm/", name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
     # cluster model where your experiment will be run.
-    str.0 = paste("Temporary_Path, ", folder_name, sep="")
+    str.0 = paste("Temporary_Path, ", temp.name, sep="")
     write(str.0,file = output.file, append = TRUE)
     
-    
-    str.1 = paste("Implementation, ", Implementation.1[j], sep="")
+    # "implementation, utiml"
+    str.1 = paste("Implementation, ", Implementation.1[w], sep="")
     write(str.1, file = output.file, append = TRUE)
     
-    # dataset name
-    str.2 = paste("Dataset_name, ", ds$Name, sep="")
+    # "dataset_name, 3s-bbc1000"
+    str.2 = paste("Dataset_Name, ", ds$Name, sep="")
     write(str.2, file = output.file, append = TRUE)
     
     # Dataset number according to "datasets-original.csv" file
-    str.3 = paste("Number_dataset, ", ds$Id, sep="")
+    # "number_dataset, 1"
+    str.3 = paste("Number_Dataset, ", ds$Id, sep="")
     write(str.3, file = output.file, append = TRUE)
     
     # Number used for X-Fold Cross-Validation
-    write("Number_folds, 10", file = output.file, append = TRUE)
+    write("Number_Folds, 10", file = output.file, append = TRUE)
     
     # Number of cores to use for parallel processing
-    write("Number_cores, 10", file = output.file, append = TRUE)
+    write("Number_Cores, 10", file = output.file, append = TRUE)
     
     # finish writing to the configuration file
     close(output.file)
@@ -151,10 +159,10 @@ while(j<=length(Implementation.1)){
     gc()
   }
   
-  j = j + 1
+  cat("\n================================================")
+  w = w + 1
   gc()
 }
-
 
 ###############################################################################
 # Please, any errors, contact us: elainececiliagatto@gmail.com                #
