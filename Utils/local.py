@@ -88,7 +88,7 @@ if __name__ == '__main__':
     
     true = (diretorio + "/y_true.csv")
     pred = (diretorio + "/y_pred_bin.csv")
-    proba = (diretorio + "/y_proba.csv")
+    proba = (diretorio + "/y_pred_proba.csv")
     
     test[labels_y_test].to_csv(true, index=False)
     

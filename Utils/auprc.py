@@ -40,14 +40,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 y_true = pd.read_csv(sys.argv[1])
-y_proba = pd.read_csv(sys.argv[2])
-y_pred_bin = pd.read_csv(sys.argv[3])
-name_proba = sys.argv[4]
-name_bin = sys.argv[5]
+y_pred = pd.read_csv(sys.argv[2])
+name = sys.argv[3]
 
-micro_proba = average_precision_score(y_true, y_proba, average = "micro")
-macro_proba = average_precision_score(y_true, y_proba, average = "macro")
+micro = average_precision_score(y_true, y_pred, average = "micro")
+macro = average_precision_score(y_true, y_pred, average = "macro")
 
-res_proba = pd.DataFrame([micro_proba, macro_proba]).T
-res_proba .columns = ["Micro-AUPRC", "Macro-AUPRC"]
-res_proba.to_csv(name_proba, index=False)
+res = pd.DataFrame([micro, macro]).T
+res.columns = ["Micro-AUPRC", "Macro-AUPRC"]
+res.to_csv(name, index=False)

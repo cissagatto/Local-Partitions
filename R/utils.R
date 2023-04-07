@@ -43,6 +43,202 @@ FolderScripts = "~/Local-Partitions/R"
 
 
 
+
+###############################################################################
+# SET WORKSAPCE                                                               #
+###############################################################################
+labelSpace <- function(parameters){
+  
+  retorno = list()
+  
+  # return all fold label space
+  classes = list()
+  
+  # from the first FOLD to the last
+  k = 1
+  while(k<=parameters$Config.File$Number.Folds){
+    
+    # get the correct fold cross-validation
+    nome_arquivo = paste(parameters$Directories$FolderCVTR ,
+                         "/", dataset_name, 
+                         "-Split-Tr-", k, ".csv", sep="")
+    
+    # open the file
+    arquivo = data.frame(read.csv(nome_arquivo))
+    
+    # split label space from input space
+    classes[[k]] = arquivo[,ds$LabelStart:ds$LabelEnd]
+    
+    # get the names labels
+    namesLabels = c(colnames(classes[[k]]))
+    
+    # increment FOLD
+    k = k + 1 
+    
+    # garbage collection
+    gc() 
+    
+  } # End While of the 10-folds
+  
+  # return results
+  retorno$NamesLabels = namesLabels
+  retorno$Classes = classes
+  return(retorno)
+  
+  gc()
+  cat("\n##########################################################")
+  cat("\n# FUNCTION LABEL SPACE: END                              #") 
+  cat("\n##########################################################")
+  cat("\n\n\n\n")
+}
+
+intersection <- function(x, y){
+  return(sum(x == 1 & y == 1))
+}
+
+# obtem a parte de baixo da matriz
+get.lower.tree <-function(matrix){
+  matrix[upper.tri(matrix)] <- 0
+  return(matrix)
+}
+
+# obtem a parte de cima da matriz
+get.upper.tree <- function(matrix){
+  matrix[lower.tri(matrix)]<- 0
+  return(matrix)
+}
+
+# constroi uma matriz de similaridade para ser preenchida
+build.similarity.matrix <- function(label.space, number.labels){
+  similarity.matrix <- matrix(nrow=number.labels, ncol=number.labels, data=0)
+  colnames(similarity.matrix) <- colnames(label.space)
+  rownames(similarity.matrix) <- colnames(label.space)
+  return(similarity.matrix)
+}
+
+# calcula a frequencia entre pares de rótulos
+frequency.pair.labels <- function(label.space){
+  
+  retorno = list()
+  
+  res = map_dfr(.x = combn(names(label.space), 2, simplify = FALSE),
+                ~ label.space %>%
+                  # select(.x) %>%
+                  select(all_of(.x)) %>%
+                  summarise(par_a = .x[1],
+                            par_b = .x[2],
+                            n = sum(rowSums(select(., everything()) == 1) == 2)))
+  names(res)[3] = "coocurrence"  
+  total = nrow(res)
+  
+  names.pairs = c("")
+  i = 1
+  while(i<=total){
+    a = toString(res$par_a[i])
+    b = toString(res$par_b[i])
+    names.pairs[i] = paste(a, " ", b, sep="")
+    i = i + 1
+    gc()
+  }
+  
+  retorno$frequency.pairs = res
+  retorno$total.pairs = total
+  retorno$names.pairs = names.pairs
+  return(retorno)
+}
+
+
+dependency <- function(label.space, number.labels){  
+  
+  retorno = list()
+  
+  ########################################################################################
+  pearson.matrix <- build.similarity.matrix(label.space, number.labels)
+  i = 1
+  j = 1
+  for (i in 1:number.labels){
+    for (j in 1:number.labels){
+      pearson.matrix[i,j] = cor(label.space[,i], label.space[,j],method = 'pearson')
+      gc()
+    }
+    gc()
+  }
+  
+  pearson.matrix.2 = abs(pearson.matrix)
+  
+  ########################################################################################
+  intersection.matrix <- build.similarity.matrix(label.space, number.labels)
+  i = 1
+  j = 1
+  for (i in 1:number.labels){
+    for (j in 1:number.labels){
+      intersection.matrix[i,j] = intersection(label.space[,i], label.space[,j])
+      gc()
+    }
+    gc()
+  }
+  
+  ############################################
+  fpl = frequency.pair.labels(label.space)        
+  
+  ############################################
+  pearson.matrix.2 = get.lower.tree(data.frame(pearson.matrix.2))    
+  intersection.matrix = get.lower.tree(data.frame(intersection.matrix))    
+  
+  ############################################
+  multiplica = pearson.matrix.2 * intersection.matrix
+  
+  ############################################
+  coluna = 1
+  linha = 2
+  cima = 0
+  baixo = 0
+  x=2
+  for(coluna in 1:(number.labels-1)){
+    for(linha in 2:number.labels){
+      if(linha > coluna){
+        cima = cima + multiplica[linha,coluna]
+        baixo = baixo + intersection.matrix[linha,coluna]
+      }
+      linha = linha + 1
+    } # fim for interno
+    coluna = coluna + 1
+    gc()
+  }
+  
+  dependency = cima / baixo
+  retorno$label.dependency = dependency
+  return(retorno)
+  
+}
+
+
+compute.label.dependecy <- function(parameters){
+  
+  final = data.frame(fold=0, dependency.label = 0)
+  f = 1 
+  while(f<=parameters$Config.File$Number.Folds){
+    cat("\nFold", f)
+    label.space = data.frame(parameters$LabelSpace$Classes[f])
+    res = dependency(label.space, parameters$Dataset.Info$Labels)
+    final = rbind(final, data.frame(fold = f, 
+                                    dependency.label = res$label.dependency))
+    f = f + 1
+    gc()
+  }
+  setwd(parameters$Directories$FolderLocal)
+  write.csv(final[-1,], "label_dependencies.csv", row.names = FALSE)
+  
+  return(res)
+}
+
+
+#c1 = c(1,1,1,0)
+#c2 = c(0,1,1,0)
+#c3 = c(1,0,1,1)
+#label.space = data.frame(c1, c2, c3)
+#res = dependency(label.space, 3)
+
 ###############################################################################
 #
 ###############################################################################
@@ -90,9 +286,9 @@ properties.datasets <- function(parameters){
                             scumble, scumble.cv, tcs)
   
   measures.tv = data.frame(fold, num.attributes, num.instances, num.inputs,
-                            num.labels, num.labelsets, num.single.labelsets,
-                            max.frequency, cardinality, density, meanIR,
-                            scumble, scumble.cv, tcs)
+                           num.labels, num.labelsets, num.single.labelsets,
+                           max.frequency, cardinality, density, meanIR,
+                           scumble, scumble.cv, tcs)
   
   folder = paste(parameters$Directories$folderDataset, 
                  "/", parameters$Dataset.Name,
@@ -186,7 +382,7 @@ properties.datasets <- function(parameters){
     val.max = apply(val.labels , 2, max)
     val.min = apply(val.labels , 2, min)
     val.quartis = apply(val.labels, 2, quantile, 
-                       probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+                        probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
     val.summary = rbind(sd = val.sd, mean = val.mean, 
                         median = val.median,
                         sum = val.sum, max = val.max, 
@@ -203,11 +399,11 @@ properties.datasets <- function(parameters){
     tv.max = apply(tv.labels , 2, max)
     tv.min = apply(tv.labels , 2, min)
     tv.quartis = apply(tv.labels, 2, quantile, 
-                        probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
+                       probs = c(0.10, 0.25, 0.50, 0.75, 0.90))
     tv.summary = rbind(sd = tv.sd, mean = tv.mean, 
-                        median = tv.median,
-                        sum = tv.sum, max = tv.max, 
-                        min = tv.min, tv.quartis)
+                       median = tv.median,
+                       sum = tv.sum, max = tv.max, 
+                       min = tv.min, tv.quartis)
     name = paste(folderSave, "/summary-tv-", f, ".csv", sep="")
     write.csv(tv.summary, name)
     
@@ -233,9 +429,9 @@ properties.datasets <- function(parameters){
     tv.num.negative.instances = tv.num.instancias - treino.num.positive.instances 
     
     todos = rbind(treino.num.positive.instances, treino.num.negative.instances,
-          teste.num.positive.instances, teste.num.negative.instances,
-          val.num.positive.instances, val.num.negative.instances,
-          tv.num.positive.instances, tv.num.negative.instances)
+                  teste.num.positive.instances, teste.num.negative.instances,
+                  val.num.positive.instances, val.num.negative.instances,
+                  tv.num.positive.instances, tv.num.negative.instances)
     
     name = paste(folderSave, "/instances-pos-neg-", f, ".csv", sep="")
     write.csv(todos, name)
@@ -297,16 +493,16 @@ properties.datasets <- function(parameters){
                     tv.max, tv.min)
     
     set = c("train.max", "train.min",
-             "teste.max", "teste.min",
-             "val.max", "val.min",
-             "tv.max", "tv.min")
+            "teste.max", "teste.min",
+            "val.max", "val.min",
+            "tv.max", "tv.min")
     
     final = data.frame(set, max.min)
-            
+    
     name = paste(folderSave, "/labels-max-min-", f, ".csv", sep="")
     write.csv(final, name, row.names = FALSE)
     
-
+    
     ##########################################################################
     labels.indices = seq(parameters$Dataset.Info$LabelStart, parameters$Dataset.Info$LabelEnd, by=1)
     mldr.treino = mldr_from_dataframe(treino, labelIndices = labels.indices)
@@ -673,254 +869,133 @@ infoDataSet <- function(dataset){
 ##############################################################################
 # 
 ##############################################################################
-roc.curva <- function(pred_bin, pred_proba, test, f, Folder){
+roc.curva <- function(f, y_pred, test, Folder, nome){
   
   #####################################################################
-  pred_bin = sapply(pred_bin, function(x) as.numeric(as.character(x)))
-  res.bin = mldr_evaluate(test, pred_bin)
-  
-  #####################################################################
-  pred_proba = sapply(pred_proba, function(x) as.numeric(as.character(x)))
-  res.proba = mldr_evaluate(test, pred_proba)
+  y_pred= sapply(y_pred, function(x) as.numeric(as.character(x)))
+  res = mldr_evaluate(test, y_pred)
   
   ###############################################################
   # PLOTANDO ROC CURVE
-  name = paste(Folder, "/roc-bin.pdf", sep="")
-  pdf(name, width = 10, height = 8)
-  print(plot(res.bin$roc, print.thres = 'all', print.auc=TRUE, 
-             print.thres.cex=0.7, grid = TRUE, identity=TRUE,
-             axes = TRUE, legacy.axes = TRUE, 
-             identity.col = "#a91e0e", col = "#1161d5",
-             main = paste("fold ", f," binary predictions")))
-  dev.off()
-  cat("\n")
+  # name = paste(Folder, "/", nome, "-roc.pdf", sep="")
+  # pdf(name, width = 10, height = 8)
+  # print(plot(res$roc, print.thres = 'best', print.auc=TRUE, 
+  #            print.thres.cex=0.7, grid = TRUE, identity=TRUE,
+  #            axes = TRUE, legacy.axes = TRUE, 
+  #            identity.col = "#a91e0e", col = "#1161d5",
+  #            main = paste("fold ", f, " ", nome, sep="")))
+  # dev.off()
+  # cat("\n")
   
   ###############################################################
-  # PLOTANDO ROC CURVE
-  name = paste(Folder, "/roc-proba.pdf", sep="")
-  pdf(name, width = 10, height = 8)
-  print(plot(res.proba$roc, print.thres = 'best', print.auc=TRUE, 
-             print.thres.cex=0.7, grid = TRUE, identity=TRUE,
-             axes = TRUE, legacy.axes = TRUE, 
-             identity.col = "#a91e0e", col = "#1161d5",
-             main = paste("fold ", f," probabilities")))
-  dev.off()
-  cat("\n")
-  
-  
-  ###############################################################
-  setwd(Folder)
-  write.csv(as.numeric(res.bin$roc$auc), "roc-bin-auc.csv")
-  write.csv(as.numeric(res.bin$macro_auc), "roc-bin-macro-auc.csv")
-  write.csv(as.numeric(res.bin$micro_auc), "roc-bin-micro-auc.csv")
-  
-  
-  ###############################################################
-  setwd(Folder)
-  write.csv(as.numeric(res.proba$roc$auc), "roc-proba-auc.csv")
-  write.csv(as.numeric(res.proba$macro_auc), "roc-proba-macro-auc.csv")
-  write.csv(as.numeric(res.proba$micro_auc), "roc-proba-micro-auc.csv")
+  write.csv(as.numeric(res$roc$auc), paste(Folder, "/", nome, "-roc-auc.csv", sep=""))
+  write.csv(as.numeric(res$macro_auc), paste(Folder, "/", nome, "-roc-auc-macro.csv", sep=""))
+  write.csv(as.numeric(res$micro_auc), paste(Folder, "/", nome, "-roc-auc-micro.csv", sep=""))
   
   
   ###############################################################
   # SALVANDO AS INFORMAÇÕES DO ROC SEPARADAMENTE
-  name = paste(Folder, "/roc-proba-1.txt", sep="")
+  name = paste(Folder, "/", nome, "-roc-1.txt", sep="")
   output.file <- file(name, "wb")
   
   write(" ", file = output.file, append = TRUE)
   write("percent: ", file = output.file, append = TRUE)
-  write(res.proba$roc$percent, file = output.file, append = TRUE)
+  write(res$roc$percent, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("sensitivities: ", file = output.file, append = TRUE)
-  write(res.proba$roc$sensitivities, file = output.file, append = TRUE)
+  write(res$roc$sensitivities, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("specificities: ", file = output.file, append = TRUE)
-  write(res.proba$roc$specificities, file = output.file, append = TRUE)
+  write(res$roc$specificities, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("thresholds: ", file = output.file, append = TRUE)
-  write(res.proba$roc$thresholds, file = output.file, append = TRUE)
+  write(res$roc$thresholds, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("direction: ", file = output.file, append = TRUE)
-  write(res.proba$roc$direction, file = output.file, append = TRUE)
+  write(res$roc$direction, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("cases: ", file = output.file, append = TRUE)
-  write(res.proba$roc$cases, file = output.file, append = TRUE)
+  write(res$roc$cases, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("controls: ", file = output.file, append = TRUE)
-  write(res.proba$roc$controls, file = output.file, append = TRUE)
+  write(res$roc$controls, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("auc: ", file = output.file, append = TRUE)
-  write(res.proba$roc$auc, file = output.file, append = TRUE)
+  write(res$roc$auc, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("original predictor: ", file = output.file, append = TRUE)
-  write(res.proba$roc$original.predictor, file = output.file, append = TRUE)
+  write(res$roc$original.predictor, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("original response: ", file = output.file, append = TRUE)
-  write(res.proba$roc$original.response, file = output.file, append = TRUE)
+  write(res$roc$original.response, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("predictor: ", file = output.file, append = TRUE)
-  write(res.proba$roc$predictor, file = output.file, append = TRUE)
+  write(res$roc$predictor, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("response: ", file = output.file, append = TRUE)
-  write(res.proba$roc$response, file = output.file, append = TRUE)
+  write(res$roc$response, file = output.file, append = TRUE)
   
   write(" ", file = output.file, append = TRUE)
   write("levels: ", file = output.file, append = TRUE)
-  write(res.proba$roc$levels, file = output.file, append = TRUE)
+  write(res$roc$levels, file = output.file, append = TRUE)
   
   close(output.file)
   
   ###############################################################
-  # SALVANDO AS INFORMAÇÕES DO ROC SEPARADAMENTE
-  name = paste(Folder, "/roc-bin-1.txt", sep="")
-  output.file <- file(name, "wb")
-  
-  write(" ", file = output.file, append = TRUE)
-  write("percent: ", file = output.file, append = TRUE)
-  write(res.bin$roc$percent, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("sensitivities: ", file = output.file, append = TRUE)
-  write(res.bin$roc$sensitivities, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("specificities: ", file = output.file, append = TRUE)
-  write(res.bin$roc$specificities, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("thresholds: ", file = output.file, append = TRUE)
-  write(res.bin$roc$thresholds, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("direction: ", file = output.file, append = TRUE)
-  write(res.bin$roc$direction, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("cases: ", file = output.file, append = TRUE)
-  write(res.bin$roc$cases, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("controls: ", file = output.file, append = TRUE)
-  write(res.bin$roc$controls, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("auc: ", file = output.file, append = TRUE)
-  write(res.bin$roc$auc, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("original predictor: ", file = output.file, append = TRUE)
-  write(res.bin$roc$original.predictor, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("original response: ", file = output.file, append = TRUE)
-  write(res.bin$roc$original.response, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("predictor: ", file = output.file, append = TRUE)
-  write(res.bin$roc$predictor, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("response: ", file = output.file, append = TRUE)
-  write(res.bin$roc$response, file = output.file, append = TRUE)
-  
-  write(" ", file = output.file, append = TRUE)
-  write("levels: ", file = output.file, append = TRUE)
-  write(res.bin$roc$levels, file = output.file, append = TRUE)
-  
-  close(output.file)
-  
-  
-  ###############################################################
   # SALVANDO AS OUTRAS INFORMAÇÕES
-  name = paste(Folder, "/roc-bin-2.txt", sep="")
+  name = paste(Folder, "/", nome, "-roc-2.txt", sep="")
   sink(name, type = "output")
-  print(res.bin$roc)
+  print(res$roc)
   cat("\n\n")
-  str(res.bin)
-  sink()
-  
-  
-  ###############################################################
-  # SALVANDO AS OUTRAS INFORMAÇÕES
-  name = paste(Folder, "/roc-proba-2.txt", sep="")
-  sink(name, type = "output")
-  print(res.proba$roc)
-  cat("\n\n")
-  str(res.proba)
+  str(res)
   sink()
 }
+
 
 
 ##############################################################################
 # 
 ##############################################################################
-predictions.information <- function(nomes.rotulos, 
-                                    probas, 
-                                    preds, 
-                                    trues, 
-                                    thr,
-                                    folder){
+matrix.confusao <- function(true, pred, type, salva, nomes.rotulos){ 
   
-  bin.names = paste(nomes.rotulos, "-pred", sep="")
-  names(preds) = bin.names
+  bipartition = data.frame(true, pred)
   
-  thr.names = paste(nomes.rotulos, "-thr", sep="")
-  names(thr) = thr.names
-  
-  test.labels = paste(nomes.rotulos, "-true", sep="")
-  names(trues) = test.labels
-  
-  proba.names = paste(nomes.rotulos, "-proba", sep="")
-  names(probas) = proba.names
-  
-  ###############################################
-  bipartition = data.frame(trues, probas)
   num.instancias = nrow(bipartition)
+  num.rotulos = ncol(true) # número de rótulos do conjunto
   
-  # número de rótulos do conjunto
-  num.rotulos = ncol(trues)
+  num.positive.instances = apply(bipartition, 2, sum) # número de instâncias positivas
+  num.negative.instances = num.instancias - num.positive.instances   # número de instâncias negativas  # salvando
   
-  # número de instâncias positivas
-  num.positive.instances = apply(bipartition, 2, sum)
-  
-  # número de instâncias negativas
-  num.negative.instances = num.instancias - num.positive.instances 
-  
-  # salvando
   res = rbind(num.positive.instances, num.negative.instances)
-  name = paste(folder, "/instances-pn.csv", sep="")
+  name = paste(salva, "/", type, "-ins-pn.csv", sep="")
   write.csv(res, name)
   
-  # calcular rótulo verdadeiro igual a 1
-  true_1 = data.frame(ifelse(trues==1,1,0))
+  true_1 = data.frame(ifelse(true==1,1,0)) # calcular rótulo verdadeiro igual a 1
   total_true_1 = apply(true_1, 2, sum)
   
-  # calcular rótulo verdadeiro igual a 0
-  true_0 = data.frame(ifelse(trues==0,1,0))
+  true_0 = data.frame(ifelse(true==0,1,0)) # calcular rótulo verdadeiro igual a 0
   total_true_0 = apply(true_0, 2, sum)
   
-  # calcular rótulo predito igual a 1
-  pred_1 = data.frame(ifelse(preds==1,1,0))
+  pred_1 = data.frame(ifelse(pred==1,1,0)) # calcular rótulo predito igual a 1
   total_pred_1 = apply(pred_1, 2, sum)
   
-  # calcular rótulo verdadeiro igual a 0
-  pred_0 = data.frame(ifelse(preds==0,1,0))
+  pred_0 = data.frame(ifelse(pred==0,1,0)) # calcular rótulo verdadeiro igual a 0
   total_pred_0 = apply(pred_0, 2, sum)
   
   matriz_totais = cbind(total_true_0, total_true_1, total_pred_0, total_pred_1)
   row.names(matriz_totais) = nomes.rotulos
-  name = paste(folder, "/trues-preds.csv", sep="")
+  name = paste(salva, "/", type, "-trues-preds.csv", sep="")
   write.csv(matriz_totais, name)
   
   # Verdadeiro Positivo: O modelo previu 1 e a resposta correta é 1
@@ -944,7 +1019,7 @@ predictions.information <- function(nomes.rotulos,
   names(FNi) = fni
   
   fpnt = data.frame(TPi, FPi, FNi, TNi)
-  name = paste(folder, "/tfpn.csv", sep="")
+  name = paste(salva, "/", type, "-tfpn.csv", sep="")
   write.csv(fpnt, name, row.names = FALSE)
   
   # total de verdadeiros positivos
@@ -970,8 +1045,38 @@ predictions.information <- function(nomes.rotulos,
   matriz_confusao_por_rotulos = data.frame(TPl, FPl, FNl, TNl)
   colnames(matriz_confusao_por_rotulos) = c("TP","FP", "FN", "TN")
   row.names(matriz_confusao_por_rotulos) = nomes.rotulos
-  name = paste(folder, "/my-thr-matrix-confusion.csv", sep="")
+  name = paste(salva, "/", type, "-matrix-confusion.csv", sep="")
   write.csv(matriz_confusao_por_rotulos, name)
+}
+
+avaliacao <- function(f, y_true, y_pred, salva, nome){
+  
+  salva.0 = paste(salva, "/", nome, "-conf-mat.txt", sep="")
+  sink(file=salva.0, type="output")
+  confmat = multilabel_confusion_matrix(y_true, y_pred)
+  print(confmat)
+  sink()
+  
+  resConfMat = multilabel_evaluate(confmat)
+  resConfMat = data.frame(resConfMat)
+  names(resConfMat) = paste("Fold-", f, sep="")
+  salva.1 = paste(salva, "/", nome, "-evaluated.csv", sep="")
+  write.csv(resConfMat, salva.1)
+  
+  conf.mat = data.frame(confmat$TPl, confmat$FPl,
+                        confmat$FNl, confmat$TNl)
+  names(conf.mat) = c("TP", "FP", "FN", "TN")
+  conf.mat.perc = data.frame(conf.mat/nrow(y_true$dataset))
+  names(conf.mat.perc) = c("TP.perc", "FP.perc", "FN.perc", "TN.perc")
+  wrong = conf.mat$FP + conf.mat$FN
+  wrong.perc = wrong/nrow(y_true$dataset)
+  correct = conf.mat$TP + conf.mat$TN
+  correct.perc = correct/nrow(y_true$dataset)
+  conf.mat.2 = data.frame(conf.mat, conf.mat.perc, wrong, correct, 
+                              wrong.perc, correct.perc)
+  salva.2 = paste(salva, "/", nome, "-utiml.csv", sep="")
+  write.csv(conf.mat.2, salva.2)
+  
   
 }
 

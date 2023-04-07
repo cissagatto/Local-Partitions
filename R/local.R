@@ -307,7 +307,7 @@ if(implementation=="utiml"){
   cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
   cat("\n######################################################\n\n")
   origem = parameters$Directories$FolderLocal
-  destino = paste("nuvem:Local/RF/", dataset_name, sep="")
+  destino = paste("nuvem:Local/RandomForests/", dataset_name, sep="")
   comando = paste("rclone -P copy ", origem, " ", destino, sep="")
   cat("\n", comando, "\n") 
   a = print(system(comando))

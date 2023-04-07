@@ -138,12 +138,11 @@ while(w<=length(pacote)){
     write("#SBATCH -t 128:00:00", file = output.file, append = TRUE)
     
     # uncomment this line if you need to use all node memory
-    # write("#SBATCH --mem=0", file = output.file, append = TRUE)
+    write("#SBATCH --mem=0", file = output.file, append = TRUE)
     
     # amount of node memory you want to use
     # comment this line if you are using -mem=0
-    write("#SBATCH --mem-per-cpu=30GB", file = output.file, append = TRUE)
-    # write("#SBATCH -mem=0", file = output.file, append = TRUE)
+    # write("#SBATCH --mem-per-cpu=30GB", file = output.file, append = TRUE)
     
     # email to receive notification
     write("#SBATCH --mail-user=elainegatto@estudante.ufscar.br",
@@ -252,7 +251,7 @@ while(w<=length(pacote)){
     
     write("", file = output.file, append = TRUE)
     write("echo COPYING SINGULARITY", file = output.file, append = TRUE)
-    str.30 = paste("cp /home/u704616/Experimentos-5b.sif ", temp.name, sep ="")
+    str.30 = paste("cp /home/u704616/Experimentos-6.sif ", temp.name, sep ="")
     write(str.30 , file = output.file, append = TRUE)
     
     
@@ -326,13 +325,13 @@ while(w<=length(pacote)){
     write(" ", file = output.file, append = TRUE)
     write("echo INICIALIZANDO O SINGULARITY", file = output.file, append = TRUE)
     str = paste("singularity instance start --bind ~/.config/rclone/:/root/.config/rclone ", 
-                temp.name, "/Experimentos-5b.sif EXPG", a, sep="")
+                temp.name, "/Experimentos-6.sif EXPLo", a, sep="")
     write(str, file = output.file, append = TRUE)
     
     
     write(" ", file = output.file, append = TRUE)
     write("echo EXECUTANDO", file = output.file, append = TRUE)
-    str = paste("singularity run --app Rscript instance://EXPG", a,
+    str = paste("singularity run --app Rscript instance://EXPLo", a,
                 " /Local-Partitions/R/Local.R \"",
                 config.file.name, "\"", sep="")
     write(str, file = output.file, append = TRUE)
@@ -340,7 +339,7 @@ while(w<=length(pacote)){
     
     write(" ", file = output.file, append = TRUE)
     write("echo STOP INSTANCIA", file = output.file, append = TRUE)
-    str = paste("singularity instance stop EXPG", a, sep="")
+    str = paste("singularity instance stop EXPLo", a, sep="")
     write(str,file = output.file, append = TRUE)
     
     

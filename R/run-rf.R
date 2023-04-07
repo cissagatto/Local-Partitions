@@ -93,6 +93,18 @@ run.rf <- function(parameters){
   parameters$Names.Labels = labels.names
   
   
+  cat("\n\n#################################################")
+  cat("\n# RUN: label space                                #")
+  cat("\n###################################################\n\n")
+  time.ls = system.time(resLS <- labelSpace(parameters))
+  parameters$LabelSpace = resLS
+  
+  
+  cat("\n\n############################################")
+  cat("\n# RUN: label dependency                      #")
+  cat("\n##############################################\n\n")
+  time.dependency = system.time(compute.label.dependecy(parameters))
+  
   
   cat("\n\n####################################################")
     cat("\n# RUN: Execute Random Forests                      #")
@@ -115,7 +127,7 @@ run.rf <- function(parameters){
   cat("\n\n###########################################################")
     cat("\n# RUN: Save Runtime                                       #")
     cat("\n###########################################################\n\n")
-  RunTimeGlobal = rbind(time.execute, time.evaluate, 
+  RunTimeGlobal = rbind(time.dependency, time.execute, time.evaluate, 
                         time.gather.evaluate)
   setwd(parameters$Directories$FolderLocal)
   write.csv(RunTimeGlobal, "Run-RunTime.csv")

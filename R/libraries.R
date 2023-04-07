@@ -42,6 +42,8 @@ library("utiml", quietly = TRUE)
 library("mldr", quietly = TRUE) 
 library("foreach", quietly = TRUE) 
 library("doParallel", quietly = TRUE) 
+library("tidyverse", quietly = TRUE) 
+library("magrittr", quietly = TRUE) 
 
 
 ##################################################################################################
