@@ -64,15 +64,15 @@ n = nrow(datasets)
 ###############################################################################
 # CREATING FOLDER TO SAVE CONFIG FILES                                        #
 ###############################################################################
-FolderCF = paste(FolderRoot, "/config-files-apptainer", sep="")
+FolderCF = paste(FolderRoot, "/config-files-laptop", sep="")
 if(dir.exists(FolderCF)==FALSE){dir.create(FolderCF)}
 
 
 ###############################################################################
 # QUAL Implementation USAR
 ###############################################################################
-Implementation.1 = c("rf")
-Implementation.2 = c("rf")
+Implementation.1 = c("rf", "clus", "mulan", "utiml")
+Implementation.2 = c("r", "c", "m", "u")
 
 
 ###############################################################################
@@ -106,23 +106,12 @@ while(w<=length(Implementation.1)){
     # Config file table header
     write("Config, Value", file = output.file, append = TRUE)
     
-    # write("Dataset_Path, /home/elaine/Datasets", 
-    #      file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, /home/u704616/Datasets", 
-    #      file = output.file, append = TRUE)
-    
-    # write("Dataset_Path, /home/biomal/Datasets", 
-    #          file = output.file, append = TRUE)
-    
-     write("Dataset_Path, /Datasets", 
+    write("Dataset_Path, ~/Local-Partitions/Datasets", 
           file = output.file, append = TRUE)
     
     name = paste("l", Implementation.2[w], "-", ds$Name, sep = "")
     
-    # directory name - "/scratch/eg-3s-bbc1000"
-    temp.name = paste("/tmp/", name, sep = "")
-    # temp.name = paste("/dev/shm/", name, sep = "")
+    temp.name = paste("/dev/shm/", name, sep = "")
     
     # Absolute path to the folder where temporary processing will be done. 
     # You should use "scratch", "tmp" or "/dev/shm", it will depend on the 
@@ -147,7 +136,7 @@ while(w<=length(Implementation.1)){
     write("Number_Folds, 10", file = output.file, append = TRUE)
     
     # Number of cores to use for parallel processing
-    write("Number_Cores, 10", file = output.file, append = TRUE)
+    write("Number_Cores, 1", file = output.file, append = TRUE)
     
     # finish writing to the configuration file
     close(output.file)
