@@ -251,13 +251,13 @@ while(w<=length(pacote)){
     
     write("", file = output.file, append = TRUE)
     write("echo COPYING SINGULARITY", file = output.file, append = TRUE)
-    str.30 = paste("cp /home/u704616/Experimentos-6.sif ", temp.name, sep ="")
+    str.30 = paste("cp /home/u704616/Experimentos-8.sif ", temp.name, sep ="")
     write(str.30 , file = output.file, append = TRUE)
     
     
     write("", file = output.file, append = TRUE)
     write("echo CRIANDO TESTED", file = output.file, append = TRUE)
-    str.29 = paste("mkdir ", temp.name, "/Local", sep="")
+    str.29 = paste("mkdir ", temp.name, "/local", sep="")
     write(str.29, file = output.file, append = TRUE)
     
     
@@ -325,14 +325,14 @@ while(w<=length(pacote)){
     write(" ", file = output.file, append = TRUE)
     write("echo INICIALIZANDO O SINGULARITY", file = output.file, append = TRUE)
     str = paste("singularity instance start --bind ~/.config/rclone/:/root/.config/rclone ", 
-                temp.name, "/Experimentos-6.sif EXPLo", a, sep="")
+                temp.name, "/Experimentos-8.sif EXPLo", a, sep="")
     write(str, file = output.file, append = TRUE)
     
     
     write(" ", file = output.file, append = TRUE)
     write("echo EXECUTANDO", file = output.file, append = TRUE)
     str = paste("singularity run --app Rscript instance://EXPLo", a,
-                " /Local-Partitions/R/Local.R \"",
+                " /Local-Partitions/R/local.R \"",
                 config.file.name, "\"", sep="")
     write(str, file = output.file, append = TRUE)
     

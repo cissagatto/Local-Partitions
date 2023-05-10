@@ -303,6 +303,28 @@ if(implementation=="utiml"){
   str5 = paste("rm -r ", parameters$Directories$FolderDataset, sep="")
   print(system(str5))
   
+  cat("\n\n###################################################################")
+  cat("\n# LOCAL: COMPRESS RESULTS                                      #")
+  cat("\n#####################################################################\n\n")
+  str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+               parameters$Dataset.Info$Name, "-results-local.tar.gz ",
+               parameters$Directories$FolderLocal, sep="")
+  print(system(str3))
+  
+  
+  cat("\n\n###################################################################")
+  cat("\n# ====> GPC: COPY TO HOME                                     #")
+  cat("\n#####################################################################\n\n")
+  
+  str0 = "~/Local-Partitions/Reports/"
+  if(dir.exists(str0)==FALSE){dir.create(str0)}
+  
+  str3 = paste(parameters$Directories$FolderLocal, "/",
+               dataset_name, "-results-local.tar.gz", sep="")
+  
+  str4 = paste("cp ", str3, " ", str0, sep="")
+  print(system(str4))
+  
   
   cat("\n\n######################################################")
   cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
@@ -428,11 +450,11 @@ if(implementation=="utiml"){
   # }
   
   cat("\n\n###################################################################")
-  cat("\n# GLOBAL: COMPRESS RESULTS                                      #")
+  cat("\n# LOCAL: COMPRESS RESULTS                                      #")
   cat("\n#####################################################################\n\n")
-  str3 = paste("tar -zcvf ", parameters$Directories$FolderGlobal, "/",
-               parameters$Dataset.Info$Name, "-results-global.tar.gz ",
-               parameters$Directories$FolderGlobal, sep="")
+  str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+               parameters$Dataset.Info$Name, "-results-local.tar.gz ",
+               parameters$Directories$FolderLocal, sep="")
   print(system(str3))
   
   
@@ -440,11 +462,11 @@ if(implementation=="utiml"){
   cat("\n# ====> GPC: COPY TO HOME                                     #")
   cat("\n#####################################################################\n\n")
   
-  str0 = "~/Global-Partitions/Reports/"
+  str0 = "~/Local-Partitions/Reports/"
   if(dir.exists(str0)==FALSE){dir.create(str0)}
   
-  str3 = paste(parameters$Directories$FolderGlobal, "/",
-               dataset_name, "-results-global.tar.gz", sep="")
+  str3 = paste(parameters$Directories$FolderLocal, "/",
+               dataset_name, "-results-local.tar.gz", sep="")
   
   str4 = paste("cp ", str3, " ", str0, sep="")
   print(system(str4))
