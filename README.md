@@ -5,11 +5,6 @@ This code is part of my PhD research at PPG-CC/DC/UFSCar in colaboration with Ka
 ## How to cite 
 @misc{Gatto2023, author = {Gatto, E. C.}, title = {Local Partitions for Multilabel Classification}, year = {2023}, publisher = {GitHub}, journal = {GitHub repository}, howpublished = {\url{https://github.com/cissagatto/Local-Partitions}}}
 
-
-## HPML Schematic
-<img src="https://github.com/cissagatto/Local-Partitions/blob/main/HPML-ALL-VERSIONS.png" width="700">
-
-
 ## Source Code
 This code source is composed of the project R to be used in RStudio IDE and also the following scripts R:
 
@@ -150,6 +145,8 @@ The results are stored in a folder called REPORTS (or output) in the project roo
 This study is financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) - Finance Code 001
 
 This study is financed in part by the Conselho Nacional de Desenvolvimento Científico e Tecnológico - Brasil (CNPQ) - Process number 200371/2022-3.
+
+We also Thanks FAPESP for support.
 
 
 ## Links
