@@ -1,15 +1,14 @@
 cat("\n\n###############################################################")
-  cat("\n# RSCRIPT: START EXECUTE Local PARTITIONS                    #")
+  cat("\n# RSCRIPT: START EXECUTE LOCAL PARTITIONS                    #")
   cat("\n###############################################################\n\n")
 
 
 # clean
 rm(list=ls())
 
-
 ##############################################################################
-# Local PARTITIONS                                                           #
-# Copyright (C) 2023                                                         #
+# LOCAL PARTITIONS MULTI-LABEL CLASSIFICATION                                #
+# Copyright (C) 2025                                                         #
 #                                                                            #
 # This code is free software: you can redistribute it and/or modify it under #
 # the terms of the GNU General Public License as published by the Free       #
@@ -19,29 +18,34 @@ rm(list=ls())
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General   #
 # Public License for more details.                                           #
 #                                                                            #
-# 1 - PhD Elaine Cecilia Gatto | Prof PhD Ricardo Cerri                      #
-# 2 - Prof PhD Mauri Ferrandin                                               #
-# 3 - Prof PhD Celine Vens | PhD Felipe Nakano Kenji                         #
-# 4 - Prof PhD Jesse Read                                                    #
+# 1 - Prof PhD Elaine Cecilia Gatto                                          #
+# 2 - Prof PhD Ricardo Cerri                                                 #
+# 3 - Prof PhD Mauri Ferrandin                                               #
+# 4 - Prof PhD Celine Vens                                                   #
+# 5 - PhD Felipe Nakano Kenji                                                #
+# 6 - Prof PhD Jesse Read                                                    #
 #                                                                            #
 # 1 = Federal University of São Carlos - UFSCar - https://www2.ufscar.br     #
 # Campus São Carlos | Computer Department - DC - https://site.dc.ufscar.br | #
 # Post Graduate Program in Computer Science - PPGCC                          # 
 # http://ppgcc.dc.ufscar.br | Bioinformatics and Machine Learning Group      #
 # BIOMAL - http://www.biomal.ufscar.br                                       # 
-#                                                                            #
-# 2 - Federal University of Santa Catarina Campus Blumenau - UFSC            #
+#                                                                            # 
+# 1 = Federal University of Lavras - UFLA                                    #
+#                                                                            # 
+# 2 = State University of São Paulo - USP                                    #
+#                                                                            # 
+# 3 - Federal University of Santa Catarina Campus Blumenau - UFSC            #
 # https://ufsc.br/                                                           #
 #                                                                            #
-# 3 - Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium           #
+# 4 and 5 - Katholieke Universiteit Leuven Campus Kulak Kortrijk Belgium     #
 # Medicine Department - https://kulak.kuleuven.be/                           #
 # https://kulak.kuleuven.be/nl/over_kulak/faculteiten/geneeskunde            #
 #                                                                            #
-# 4 - Ecole Polytechnique | Institut Polytechnique de Paris | 1 rue Honoré   #
+# 6 - Ecole Polytechnique | Institut Polytechnique de Paris | 1 rue Honoré   #
 # d’Estienne d’Orves - 91120 - Palaiseau - FRANCE                            #
 #                                                                            #
 ##############################################################################
-
 
 cat("\n################################")
 cat("\n# Set Work Space               #")
@@ -88,11 +92,9 @@ cat("\n# GET ARGUMENTS FROM COMMAND LINE   #")
 cat("\n#####################################\n\n")
 args <- commandArgs(TRUE)
 
-
-# config_file = "~/Local-Partitions/config-files-laptop/clus/lc-GpositiveGO.csv"
-
-
 config_file <- args[1]
+
+# config_file = "~/Local-Partitions/config-files/lr-emotions.csv"
 
 
 parameters$Config.File.Name = config_file
@@ -229,56 +231,8 @@ if(file.exists(str00)==FALSE){
 ##############################################################################
 #
 ##############################################################################
-if(implementation=="utiml"){
-  # 
-  # setwd(FolderScripts)
-  # source("run-utiml.R")
-  # 
-  # cat("\n\n############################################################")
-  # cat("\n# RSCRIPT Local START                                     #")
-  # cat("\n############################################################\n\n")
-  # timeFinal <- system.time(results <- run.ecc.utiml(ds, 
-  #                                                   dataset_name,
-  #                                                   number_dataset, 
-  #                                                   number_cores, 
-  #                                                   number_folds, 
-  #                                                   folderResults))  
-  # 
-  # cat("\n\n#####################################################")
-  # cat("\n# RSCRIPT SAVE RUNTIME                              #")
-  # cat("\n#####################################################\n\n")
-  # result_set <- t(data.matrix(timeFinal))
-  # setwd(diretorios$folderLocal)
-  # write.csv(result_set, "Runtime-Final.csv")
-  # x.minutos =(1 * as.numeric(result_set[3]))/60
-  # setwd(diretorios$folderLocal)
-  # write(x.minutos, "minutos.txt")
-  # 
-  # 
-  # cat("\n\n#####################################################")
-  # cat("\n# RSCRIPT DELETE                                   #")
-  # cat("\n####################################################\n\n")
-  # str5 = paste("rm -r ", diretorios$folderDataset, sep="")
-  # print(system(str5))
-  # 
-  # 
-  # 
-  # cat("\n\n######################################################")
-  # cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
-  # cat("\n######################################################\n\n")
-  # origem = diretorios$folderLocal
-  # destino = paste("nuvem:Local/Utiml/", dataset_name, sep="")
-  # comando = paste("rclone -P copy ", origem, " ", destino, sep="")
-  # cat("\n", comando, "\n") 
-  # a = print(system(comando))
-  # a = as.numeric(a)
-  # if(a != 0) {
-  #   stop("Erro RCLONE")
-  #   quit("yes")
-  # }
-  # 
+if(implementation=="rf"){
   
-} else if(implementation=="rf"){
   
   setwd(FolderScripts)
   source("run-rf.R")
@@ -303,43 +257,49 @@ if(implementation=="utiml"){
   str5 = paste("rm -r ", parameters$Directories$FolderDataset, sep="")
   print(system(str5))
   
+  
   cat("\n\n###################################################################")
   cat("\n# LOCAL: COMPRESS RESULTS                                      #")
   cat("\n#####################################################################\n\n")
-  str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
-               parameters$Dataset.Info$Name, "-results-local.tar.gz ",
-               parameters$Directories$FolderLocal, sep="")
-  print(system(str3))
+  # str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+  #              parameters$Dataset.Info$Name, "-results-local.tar.gz ",
+  #              parameters$Directories$FolderLocal, sep="")
+  # print(system(str3))
+  
+  str_01 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+                 parameters$Dataset.Info$Name, "-results-local.tar.gz -C ",
+                 parameters$Directories$FolderLocal, " .", sep="")
+  print(system(str_01))
   
   
   cat("\n\n###################################################################")
-  cat("\n# ====> GPC: COPY TO HOME                                     #")
+  cat("\n# ====> LPC: COPY TO HOME                                     #")
   cat("\n#####################################################################\n\n")
   
-  str0 = "~/Local-Partitions/Reports/"
-  if(dir.exists(str0)==FALSE){dir.create(str0)}
+  str_02 = "~/Local-Partitions/Reports/"
+  if(dir.exists(str_02)==FALSE){dir.create(str_02)}
   
-  str3 = paste(parameters$Directories$FolderLocal, "/",
-               dataset_name, "-results-local.tar.gz", sep="")
+  str_03 = paste(parameters$Directories$FolderLocal, "/",
+                 dataset_name, "-results-local.tar.gz", sep="")
   
-  str4 = paste("cp ", str3, " ", str0, sep="")
-  print(system(str4))
+  str_04 = paste("cp ", str_03, " ", str_02, sep="")
+  print(system(str_04))
   
   
-  cat("\n\n######################################################")
-  cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
-  cat("\n######################################################\n\n")
-  origem = parameters$Directories$FolderLocal
-  destino = paste("nuvem:Local/RandomForests/", dataset_name, sep="")
-  comando = paste("rclone -P copy ", origem, " ", destino, sep="")
-  cat("\n", comando, "\n") 
-  a = print(system(comando))
-  a = as.numeric(a)
-  if(a != 0) {
-    stop("Erro RCLONE")
-    quit("yes")
-  }
-  
+  # cat("\n\n######################################################")
+  # cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
+  # cat("\n######################################################\n\n")
+  # origem = parameters$Directories$FolderLocal
+  # destino = paste("nuvem:Local/RandomForests/", dataset_name, sep="")
+  # comando = paste("rclone -P copy ", origem, " ", destino, sep="")
+  # cat("\n", comando, "\n") 
+  # a = print(system(comando))
+  # a = as.numeric(a)
+  # if(a != 0) {
+  #   stop("Erro RCLONE")
+  #   quit("yes")
+  # }
+  # 
   
   # cat("\n\n######################################################")
   # cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
@@ -355,60 +315,8 @@ if(implementation=="utiml"){
   #   quit("yes")
   # }
   
-} else if(implementation=="mulan"){
-  # 
-  # 
-  # setwd(FolderScripts)
-  # source("run-mulan.R")
-  # 
-  # 
-  # cat("\n\n############################################################")
-  # cat("\n# RSCRIPT Local START                                     #")
-  # cat("\n############################################################\n\n")
-  # timeFinal <- system.time(results <- run.ecc.mulan(ds, 
-  #                                                   dataset_name,
-  #                                                   number_dataset, 
-  #                                                   number_cores, 
-  #                                                   number_folds, 
-  #                                                   folderResults))  
-  # 
-  # 
-  # 
-  # cat("\n\n#####################################################")
-  # cat("\n# RSCRIPT SAVE RUNTIME                              #")
-  # cat("\n#####################################################\n\n")
-  # result_set <- t(data.matrix(timeFinal))
-  # setwd(diretorios$folderLocal)
-  # write.csv(result_set, "Final-Runtime.csv")
-  # x.minutos = (1 * as.numeric(result_set[3]))/60
-  # setwd(diretorios$folderLocal)
-  # write(x.minutos, "minutos.txt")
-  # 
-  # 
-  # cat("\n\n#################################################")
-  # cat("\n# RSCRIPT DELETE                                  #")
-  # cat("\n###################################################\n\n")
-  # str5 = paste("rm -r ", diretorios$folderDataset, sep="")
-  # print(system(str5))
-  # 
-  # 
-  # cat("\n\n######################################################")
-  # cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
-  # cat("\n######################################################\n\n")
-  # origem = diretorios$folderLocal
-  # destino = paste("nuvem:Local/Mulan/", dataset_name, sep="")
-  # comando = paste("rclone -P copy ", origem, " ", destino, sep="")
-  # cat("\n", comando, "\n") 
-  # a = print(system(comando))
-  # a = as.numeric(a)
-  # if(a != 0) {
-  #   stop("Erro RCLONE")
-  #   quit("yes")
-  # }
+} else if(implementation=="clus"){
   
-  
-  
-} else {
   
   setwd(FolderScripts)
   source("run-clus.R")
@@ -433,8 +341,7 @@ if(implementation=="utiml"){
   str5 = paste("rm -r ", parameters$Directories$FolderDataset, sep="")
   print(system(str5))
   
-  
-  # 
+   
   # cat("\n\n######################################################")
   # cat("\n# RSCRIPT COPY TO GOOGLE DRIVE                       #")
   # cat("\n######################################################\n\n")
@@ -452,48 +359,39 @@ if(implementation=="utiml"){
   cat("\n\n###################################################################")
   cat("\n# LOCAL: COMPRESS RESULTS                                      #")
   cat("\n#####################################################################\n\n")
-  str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
-               parameters$Dataset.Info$Name, "-results-local.tar.gz ",
-               parameters$Directories$FolderLocal, sep="")
-  print(system(str3))
+  # str3 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+  #              parameters$Dataset.Info$Name, "-results-local.tar.gz ",
+  #              parameters$Directories$FolderLocal, sep="")
+  # print(system(str3))
+  
+  str_01 = paste("tar -zcvf ", parameters$Directories$FolderLocal, "/",
+                 parameters$Dataset.Info$Name, "-results-local.tar.gz -C ",
+                 parameters$Directories$FolderLocal, " .", sep="")
+  print(system(str_01))
   
   
   cat("\n\n###################################################################")
   cat("\n# ====> GPC: COPY TO HOME                                     #")
   cat("\n#####################################################################\n\n")
   
-  str0 = "~/Local-Partitions/Reports/"
+  str_02 = "~/Local-Partitions/Reports/"
   if(dir.exists(str0)==FALSE){dir.create(str0)}
   
-  str3 = paste(parameters$Directories$FolderLocal, "/",
-               dataset_name, "-results-local.tar.gz", sep="")
+  str_03 = paste(parameters$Directories$FolderLocal, "/",
+                 dataset_name, "-results-local.tar.gz", sep="")
   
-  str4 = paste("cp ", str3, " ", str0, sep="")
+  str_04 = paste("cp ", str_03, " ", str_02, sep="")
   print(system(str4))
   
   
+  
+} else if(implementation=="mulan"){
+  #  working in progress
+  
+} else {
+  #  working in progress
+  
 }
-
-
-# cat("\n\n###################################################################")
-# cat("\n# ECC Local: COMPRESS RESULTS                                      #")
-# cat("\n#####################################################################\n\n")
-# str3 = paste("tar -zcvf ", diretorios$folderResults, "/", 
-#              dataset_name, "-results-Local.tar.gz ", 
-#              diretorios$folderResults, sep="")
-# print(system(str3))
-
-
-# cat("\n\n##############################################################")
-# cat("\n# ECC Local: COPY TO FOLDER REPORTS                           #")
-# cat("\n###############################################################\n\n")
-# str0 = "/Local-Partitions/Reports/"
-# if(dir.exists(str0)==FALSE){dir.create(str0)}
-# str1 = paste(diretorios$folderResults, "/", dataset_name,
-#              "-results-Local.tar.gz", sep="")
-# str4 = paste("cp -r ", str1 , " ", str0, sep="")
-# print(system(str4))
-
 
 
 cat("\n\n#######################################################")
