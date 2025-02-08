@@ -1,0 +1,8 @@
+Config, Value
+Dataset_Path, ~/Local-Partitions/Datasets
+Temporary_Path, /dev/shm/lr-bibtex
+Implementation, rf
+Dataset_Name, bibtex
+Number_Dataset, 5
+Number_Folds, 10
+Number_Cores, 1
